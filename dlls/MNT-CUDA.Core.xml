@@ -1,0 +1,3230 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MNT-CUDA.Core</name>
+    </assembly>
+    <members>
+        <member name="T:MntCuda.BaseNodeIndexedCollection`1">
+            <summary>
+            Базовый класс для классов-коллекций, индексируемых по нодам, без спецификации 
+            способа хранения данных.
+            </summary>
+            <typeparam name="T">Тип данных в коллекции.</typeparam>
+            <remarks>
+            <para>
+            С точки зрения интерфейса, индексируемая по нодам коллекция является трёхмерным 
+            прямоугольным массивом элементов типа <typeparamref name="T"/> с размером, 
+            определяемым сеткой индексации <see cref="P:MntCuda.BaseNodeIndexedCollection`1.Grid"/>: 
+            <c>Grid.N[0] * Grid.N[1] * Grid.N[2]</c>. 
+            Даже если в физической системе какому-либо мультииндексу ноды ничего не 
+            соответствует, в коллекции данному мультииндексу ноды будет соответствовать 
+            элемент со значением по умолчанию для <typeparamref name="T"/>, если 
+            <typeparamref name="T"/> является типом значения, или <see langword="null"/>, 
+            если <typeparamref name="T"/> является ссылочным или <c>Nullable</c>.
+            </para>
+            Индексируемыми по нодам коллекциями в MNT-CUDA являются 
+            <see cref="T:MntCuda.SourceData`1"/> и <see cref="T:MntCuda.HardGeometry.GeometrySystem"/>.
+            </remarks>
+        </member>
+        <member name="P:MntCuda.BaseNodeIndexedCollection`1.Grid">
+            <summary>Сетка индексации.</summary>
+        </member>
+        <member name="P:MntCuda.BaseNodeIndexedCollection`1.Item(MntCuda.NodeIndex)">
+            <summary>
+            Индексатор коллекции по мультииндексу ноды.
+            </summary>
+            <param name="node">Мультииндекс ноды.</param>
+            <returns>Элемент коллекции, соответствующий заданному мультииндексу ноды.</returns>
+            <exception cref="T:MntCuda.MntCudaException">Если ноды с таким мультииндексом нет в сетке индексации.</exception>
+        </member>
+        <member name="P:MntCuda.BaseNodeIndexedCollection`1.Item(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Индексатор коллекции по целочисленным индексам ноды.
+            </summary>
+            <inheritdoc cref="M:MntCuda.NodeIndex.#ctor(System.Int32,System.Int32,System.Int32)"/>
+            <returns>Элемент коллекции, соответствующий заданным целочисленным индексам ноды.</returns>
+            <exception cref="T:MntCuda.MntCudaException">Если ноды с такими целочисленными индексами нет в сетке индексации.</exception>
+        </member>
+        <member name="M:MntCuda.BaseNodeIndexedCollection`1.GetUnsafeValue(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Получить элемент по целочисленным индексам ноды.
+            Внимание - метод не безопасен и предполагает, что нода, заданная индексами принадлежит сетке индексации.
+            </summary>
+            <inheritdoc cref="M:MntCuda.NodeIndex.#ctor(System.Int32,System.Int32,System.Int32)"/>
+            <returns>Элемент коллекции, соответствующий заданным целочисленным индексам ноды.</returns>
+        </member>
+        <member name="M:MntCuda.BaseNodeIndexedCollection`1.SetUnsafeValue(System.Int32,System.Int32,System.Int32,`0)">
+            <summary>
+            Изменить элемент заданный по целочисленным индексам ноды.
+            Внимание - метод не безопасен и предполагает, что нода, заданная индексами принадлежит сетке индексации.
+            </summary>
+            <inheritdoc cref="M:MntCuda.NodeIndex.#ctor(System.Int32,System.Int32,System.Int32)"/>
+            <param name="value">Присваемое значение</param>
+        </member>
+        <member name="M:MntCuda.BaseNodeIndexedCollection`1.Keys">
+            <inheritdoc cref="M:MntCuda.Grid.Nodes"/>
+        </member>
+        <member name="M:MntCuda.BaseNodeIndexedCollection`1.Keys(System.String,System.Int32,System.Int32,System.Int32)">
+            <inheritdoc cref="M:MntCuda.Grid.Nodes(System.String,System.Int32,System.Int32,System.Int32)"/>
+        </member>
+        <member name="M:MntCuda.BaseNodeIndexedCollection`1.Values">
+            <summary>
+            Генератор последовательности (перечислитель) элементов индексируемой по 
+            нодам коллекции для организации перебора в циклах <see langword="foreach"/>.
+            </summary>
+            <returns>Текущий элемент коллекции.</returns>
+            <inheritdoc cref="M:MntCuda.Grid.Nodes"/>
+        </member>
+        <member name="M:MntCuda.BaseNodeIndexedCollection`1.Values(System.String,System.Int32,System.Int32,System.Int32)">
+            <inheritdoc cref="M:MntCuda.BaseNodeIndexedCollection`1.Values" path="summary|returns"/>
+            <inheritdoc cref="M:MntCuda.Grid.Nodes(System.String,System.Int32,System.Int32,System.Int32)"/>
+        </member>
+        <member name="M:MntCuda.BaseNodeIndexedCollection`1.GetEnumerator(System.String,System.Int32,System.Int32,System.Int32)">
+            <inheritdoc cref="M:MntCuda.BaseNodeIndexedCollection`1.GetEnumerator" path="summary|returns"/>
+            <inheritdoc cref="M:MntCuda.Grid.Nodes(System.String,System.Int32,System.Int32,System.Int32)"/>
+        </member>
+        <member name="M:MntCuda.BaseNodeIndexedCollection`1.GetEnumerator">
+            <summary>
+            Генератор последовательности (перечислитель) пар (<i>мультииндекс ноды</i>, 
+            <i>элемент индексируемой по нодам коллекции</i>) для организации перебора 
+            в циклах <see langword="foreach"/>.
+            </summary>
+            <returns>Пара (<i>текущий мультииндекс ноды</i>, <i>соответствующий ему элемент коллекции</i>).</returns>
+            <inheritdoc cref="M:MntCuda.Grid.Nodes"/>
+        </member>
+        <member name="M:MntCuda.BaseNodeIndexedCollection`1.#ctor(MntCuda.Grid)">
+            <summary>
+            Базовый конструктор класса-коллекции. Копирует сетку индексации.
+            </summary>
+            <param name="grid">Сетка индексации.</param>
+        </member>
+        <member name="T:MntCuda.FlattenNodeIndexedCollection`1">
+            <summary>
+            Базовый класс для индексируемых по нодам классов-коллекций, в которых данные 
+            хранятся в виде линейного массива.
+            </summary>
+            <inheritdoc cref="T:MntCuda.BaseNodeIndexedCollection`1"/>
+        </member>
+        <member name="F:MntCuda.FlattenNodeIndexedCollection`1.data">
+            <summary>
+            Линейный массив размером <c>Grid.N[0] * Grid.N[1] * Grid.N[2]</c> для 
+            хранения данных коллекции.
+            </summary>
+        </member>
+        <member name="M:MntCuda.FlattenNodeIndexedCollection`1.GetUnsafeValue(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Получить элемент по целочисленным индексам ноды.
+            Внимание - метод не безопасен и предполагает, что нода, заданная индексами принадлежит сетке индексации.
+            </summary>
+            <inheritdoc cref="M:MntCuda.NodeIndex.#ctor(System.Int32,System.Int32,System.Int32)"/>
+            <returns>Элемент коллекции, соответствующий заданным целочисленным индексам ноды.</returns>
+        </member>
+        <member name="M:MntCuda.FlattenNodeIndexedCollection`1.SetUnsafeValue(System.Int32,System.Int32,System.Int32,`0)">
+            <summary>
+            Изменить элемент заданный по целочисленным индексам ноды.
+            Внимание - метод не безопасен и предполагает, что нода, заданная индексами принадлежит сетке индексации.
+            </summary>
+            <inheritdoc cref="M:MntCuda.NodeIndex.#ctor(System.Int32,System.Int32,System.Int32)"/>
+            <param name="value">Присваемое значение</param>
+        </member>
+        <member name="M:MntCuda.FlattenNodeIndexedCollection`1.#ctor(MntCuda.Grid)">
+            <summary>
+            Инициализировать экземпляр класса-коллекции с размером массива, определяемым 
+            сеткой индексации для нод: <c>grid.N[0] * grid.N[1] * grid.N[2]</c>.
+            </summary>
+            <param name="grid">Сетка индексации.</param>
+        </member>
+        <member name="T:MntCuda.BaseZoneAndGroupIndexedCollection`1">
+            <summary>
+            Базовый класс для классов-коллекций, индексируемых по зонам и группам, 
+            без спецификации способа хранения данных.
+            </summary>
+            <typeparam name="T">Тип данных в коллекции.</typeparam>
+            <remarks>
+            <para>
+            С точки зрения интерфейса, индексируемая по зонам и группа коллекция является 
+            пятимерным прямоугольным массивом элементов типа <typeparamref name="T"/> с размером, 
+            определяемым сеткой индексации <see cref="P:MntCuda.BaseZoneAndGroupIndexedCollection`1.Grid"/>: 
+            <c>Grid.N[0] * Grid.N[1] * Grid.N[2] * Grid.Nphys * Grid.Ng</c>. 
+            Даже если в физической системе какому-либо мультииндексу зоны или индексу группы 
+            ничего не соответствует, в коллекции данному мультииндексу ноды будет соответствовать 
+            элемент со значением по умолчанию для <typeparamref name="T"/>, если 
+            <typeparamref name="T"/> является типом значения, или <see langword="null"/>, если 
+            <typeparamref name="T"/> является ссылочным или <c>Nullable</c>.
+            </para>
+            Индексируемой по зонам и группам коллекцией в MNT-CUDA является <see cref="T:MntCuda.Functional3D"/>.
+            </remarks>
+        </member>
+        <member name="P:MntCuda.BaseZoneAndGroupIndexedCollection`1.Grid">
+            <summary>Сетка индексации.</summary>
+        </member>
+        <member name="P:MntCuda.BaseZoneAndGroupIndexedCollection`1.Item(MntCuda.ZoneIndex,System.Int32)">
+            <summary>
+            Индексатор коллекции по мультииндексу зоны и целочисленному индексу группы.
+            </summary>
+            <param name="zone">Мультииндекс зоны.</param>
+            <param name="group">Целочисленный индекс группы.</param>
+            <returns>Элемент коллекции, соответствующий заданному мультииндексу зоны и 
+                заданному целочисленному индексу группы.</returns>
+            <exception cref="T:MntCuda.MntCudaException">Если зоны или группы с такими целочисленными 
+                индексами нет в сетке индексации.</exception>
+        </member>
+        <member name="P:MntCuda.BaseZoneAndGroupIndexedCollection`1.Item(MntCuda.NodeIndex,System.Int32,System.Int32)">
+            <summary>
+            Индексатор коллекции по мультииндексу ноды и целочисленным индексам зоны и группы.
+            </summary>
+            <inheritdoc cref="M:MntCuda.ZoneIndex.#ctor(MntCuda.NodeIndex,System.Int32)"/>
+            <param name="group">Целочисленный индекс группы.</param>
+            <returns>Элемент коллекции, соответствующий заданному мультииндексу ноды и 
+                заданным целочисленным индексам зоны и группы.</returns>
+            <exception cref="T:MntCuda.MntCudaException">Если зоны или группы с такими целочисленными 
+                индексами нет в сетке индексации.</exception>
+        </member>
+        <member name="P:MntCuda.BaseZoneAndGroupIndexedCollection`1.Item(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Индексатор коллекции по целочисленным индексам ноды, зоны и группы.
+            </summary>
+            <inheritdoc cref="M:MntCuda.ZoneIndex.#ctor(System.Int32,System.Int32,System.Int32,System.Int32)"/>
+            <param name="group">Целочисленный индекс группы.</param>
+            <returns>Элемент коллекции, соответствующий заданным целочисленным индексам 
+                 ноды, зоны и группы.</returns>
+            <exception cref="T:MntCuda.MntCudaException">Если зоны или группы с такими целочисленными 
+                индексами нет в сетке индексации.</exception>
+        </member>
+        <member name="M:MntCuda.BaseZoneAndGroupIndexedCollection`1.GetUnsafeValue(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Получить элемент по целочисленным индексам ноды, зоны и группы.
+            Внимание - метод не безопасен и предполагает, что нода, зона и группа заданная индексами принадлежит сетке индексации.
+            </summary>
+            <inheritdoc cref="M:MntCuda.ZoneIndex.#ctor(System.Int32,System.Int32,System.Int32,System.Int32)"/>
+            <param name="group">Целочисленный индекс группы.</param>
+            <returns>Элемент коллекции, соответствующий заданным целочисленным индексам ноды и зоны.</returns>
+        </member>
+        <member name="M:MntCuda.BaseZoneAndGroupIndexedCollection`1.SetUnsafeValue(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,`0)">
+            <summary>
+            Изменить элемент заданный по целочисленным индексам ноды, зоны и группы.
+            Внимание - метод не безопасен и предполагает, что нода, зона и группа, заданная индексами принадлежит сетке индексации.
+            </summary>
+            <inheritdoc cref="M:MntCuda.ZoneIndex.#ctor(System.Int32,System.Int32,System.Int32,System.Int32)"/>
+            <param name="group">Целочисленный индекс группы.</param>
+            <param name="value">Присваемое значение</param>
+        </member>
+        <member name="M:MntCuda.BaseZoneAndGroupIndexedCollection`1.Zones">
+            <inheritdoc cref="M:MntCuda.Grid.Zones"/>
+        </member>
+        <member name="M:MntCuda.BaseZoneAndGroupIndexedCollection`1.Zones(System.String,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <inheritdoc cref="M:MntCuda.Grid.Zones(System.String,System.Int32,System.Int32,System.Int32,System.Int32)"/>
+        </member>
+        <member name="M:MntCuda.BaseZoneAndGroupIndexedCollection`1.Nodes">
+            <inheritdoc cref="M:MntCuda.Grid.Nodes"/>
+        </member>
+        <member name="M:MntCuda.BaseZoneAndGroupIndexedCollection`1.Nodes(System.String,System.Int32,System.Int32,System.Int32)">
+            <inheritdoc cref="M:MntCuda.Grid.Nodes(System.String,System.Int32,System.Int32,System.Int32)"/>
+        </member>
+        <member name="M:MntCuda.BaseZoneAndGroupIndexedCollection`1.Keys">
+            <inheritdoc cref="M:MntCuda.Grid.ZonesAndGroups"/>
+        </member>
+        <member name="M:MntCuda.BaseZoneAndGroupIndexedCollection`1.Keys(System.String,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <inheritdoc cref="M:MntCuda.Grid.ZonesAndGroups(System.String,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)"/>
+        </member>
+        <member name="M:MntCuda.BaseZoneAndGroupIndexedCollection`1.Values">
+            <summary>
+            Генератор последовательности (перечислитель) элементов индексируемой по зонам 
+            и группам коллекции для организации перебора в циклах <see langword="foreach"/>.
+            </summary>
+            <returns>Текущий элемент коллекции.</returns>
+            <inheritdoc cref="M:MntCuda.Grid.ZonesAndGroups"/>
+        </member>
+        <member name="M:MntCuda.BaseZoneAndGroupIndexedCollection`1.Values(System.String,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <inheritdoc cref="M:MntCuda.BaseZoneAndGroupIndexedCollection`1.Values" path="summary|returns"/>
+            <inheritdoc cref="M:MntCuda.Grid.ZonesAndGroups(System.String,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)"/>
+        </member>
+        <member name="M:MntCuda.BaseZoneAndGroupIndexedCollection`1.GetEnumerator(System.String,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <inheritdoc cref="M:MntCuda.BaseZoneAndGroupIndexedCollection`1.GetEnumerator" path="summary|returns"/>
+            <inheritdoc cref="M:MntCuda.Grid.ZonesAndGroups(System.String,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)"/>
+        </member>
+        <member name="M:MntCuda.BaseZoneAndGroupIndexedCollection`1.GetEnumerator">
+            <summary>
+            Генератор последовательности (перечислитель) пар (<i>ключ</i>, <i>элемент 
+            индексируемой по зонам и группам коллекции</i>), где <i>ключом</i> является 
+            пара (<i>мультииндекс зоны</i>, <i>индекс группы</i>), для организации перебора 
+            в циклах <see langword="foreach"/>.
+            </summary>
+            <returns>Пара ((<i>текущий мультииндекс зоны</i>, <i>текущий индекс группы</i>), 
+                <i>соответствующий им элемент коллекции</i>).</returns>
+            <inheritdoc cref="M:MntCuda.Grid.ZonesAndGroups"/>
+        </member>
+        <member name="M:MntCuda.BaseZoneAndGroupIndexedCollection`1.#ctor(MntCuda.Grid)">
+            <summary>
+            Базовый конструктор класса-коллекции. Копирует сетку индексации.
+            </summary>
+            <param name="grid">Сетка индексации.</param>
+        </member>
+        <member name="T:MntCuda.BaseZoneIndexedCollection`1">
+            <summary>
+            Базовый класс для классов-коллекций, индексируемых по зонам, 
+            без спецификации способа хранения данных.
+            </summary>
+            <typeparam name="T">Тип данных в коллекции.</typeparam>
+            <remarks>
+            <para>
+            С точки зрения интерфейса, индексируемая по зонам коллекция является четырёхмерным 
+            прямоугольным массивом элементов типа <typeparamref name="T"/> с размером, 
+            определяемым сеткой индексации <see cref="P:MntCuda.BaseZoneIndexedCollection`1.Grid"/>: 
+            <c>Grid.N[0] * Grid.N[1] * Grid.N[2] * Grid.Nphys</c>. 
+            Даже если в физической системе какому-либо мультииндексу зоны ничего не 
+            соответствует, в коллекции данному мультииндексу ноды будет соответствовать 
+            элемент со значением по умолчанию для <typeparamref name="T"/>, если 
+            <typeparamref name="T"/> является типом значения, или <see langword="null"/>, 
+            если <typeparamref name="T"/> является ссылочным или <c>Nullable</c>.
+            </para>
+            Индексируемой по зонам коллекцией в MNT-CUDA является <see cref="T:MntCuda.CrossData"/>.
+            </remarks>
+        </member>
+        <member name="P:MntCuda.BaseZoneIndexedCollection`1.Grid">
+            <summary>Сетка индексации.</summary>
+        </member>
+        <member name="P:MntCuda.BaseZoneIndexedCollection`1.Item(MntCuda.ZoneIndex)">
+            <summary>
+            Индексатор коллекции по мультииндексу зоны.
+            </summary>
+            <param name="zone">Мультииндекс зоны.</param>
+            <returns>Элемент коллекции, соответствующий заданному мультииндексу зоны.</returns>
+            <exception cref="T:MntCuda.MntCudaException">Если зоны с такими целочисленными индексами нет в сетке индексации.</exception>
+        </member>
+        <member name="P:MntCuda.BaseZoneIndexedCollection`1.Item(MntCuda.NodeIndex,System.Int32)">
+            <summary>
+            Индексатор коллекции по мультииндексу ноды и целочисленному индексу зоны.
+            </summary>
+            <inheritdoc cref="M:MntCuda.ZoneIndex.#ctor(MntCuda.NodeIndex,System.Int32)"/>
+            <returns>Элемент коллекции, соответствующий заданному мультииндексу ноды и 
+                заданному целочисленному индексу зоны.</returns>
+            <exception cref="T:MntCuda.MntCudaException">Если зоны с такими целочисленными индексами нет в сетке индексации.</exception>
+        </member>
+        <member name="P:MntCuda.BaseZoneIndexedCollection`1.Item(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Индексатор коллекции по целочисленным индексам ноды и зоны.
+            </summary>
+            <inheritdoc cref="M:MntCuda.ZoneIndex.#ctor(System.Int32,System.Int32,System.Int32,System.Int32)"/>
+            <returns>Элемент коллекции, соответствующий заданным целочисленным индексам ноды и зоны.</returns>
+            <exception cref="T:MntCuda.MntCudaException">Если зоны с такими целочисленными индексами нет в сетке индексации.</exception>
+        </member>
+        <member name="M:MntCuda.BaseZoneIndexedCollection`1.GetUnsafeValue(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Получить элемент по целочисленным индексам ноды и зоны.
+            Внимание - метод не безопасен и предполагает, что нода и зона, заданная индексами принадлежит сетке индексации.
+            </summary>
+            <inheritdoc cref="M:MntCuda.ZoneIndex.#ctor(System.Int32,System.Int32,System.Int32,System.Int32)"/>
+            <returns>Элемент коллекции, соответствующий заданным целочисленным индексам ноды и зоны.</returns>
+        </member>
+        <member name="M:MntCuda.BaseZoneIndexedCollection`1.SetUnsafeValue(System.Int32,System.Int32,System.Int32,System.Int32,`0)">
+            <summary>
+            Изменить элемент заданный по целочисленным индексам ноды и зоны.
+            Внимание - метод не безопасен и предполагает, что нода и зона, заданная индексами принадлежит сетке индексации.
+            </summary>
+            <inheritdoc cref="M:MntCuda.ZoneIndex.#ctor(System.Int32,System.Int32,System.Int32,System.Int32)"/>
+            <param name="value">Присваемое значение</param>
+        </member>
+        <member name="M:MntCuda.BaseZoneIndexedCollection`1.Keys">
+            <inheritdoc cref="M:MntCuda.Grid.Zones"/>
+        </member>
+        <member name="M:MntCuda.BaseZoneIndexedCollection`1.Keys(System.String,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <inheritdoc cref="M:MntCuda.Grid.Zones(System.String,System.Int32,System.Int32,System.Int32,System.Int32)"/>
+        </member>
+        <member name="M:MntCuda.BaseZoneIndexedCollection`1.Nodes">
+            <inheritdoc cref="M:MntCuda.Grid.Nodes"/>
+        </member>
+        <member name="M:MntCuda.BaseZoneIndexedCollection`1.Nodes(System.String,System.Int32,System.Int32,System.Int32)">
+            <inheritdoc cref="M:MntCuda.Grid.Nodes(System.String,System.Int32,System.Int32,System.Int32)"/>
+        </member>
+        <member name="M:MntCuda.BaseZoneIndexedCollection`1.Values">
+            <summary>
+            Генератор последовательности (перечислитель) элементов индексируемой по зонам 
+            коллекции для организации перебора в циклах <see langword="foreach"/>.
+            </summary>
+            <returns>Текущий элемент коллекции.</returns>
+            <inheritdoc cref="M:MntCuda.Grid.Zones"/>
+        </member>
+        <member name="M:MntCuda.BaseZoneIndexedCollection`1.Values(System.String,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <inheritdoc cref="M:MntCuda.BaseZoneIndexedCollection`1.Values" path="summary|returns"/>
+            <inheritdoc cref="M:MntCuda.Grid.Zones(System.String,System.Int32,System.Int32,System.Int32,System.Int32)"/>
+        </member>
+        <member name="M:MntCuda.BaseZoneIndexedCollection`1.GetEnumerator(System.String,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <inheritdoc cref="M:MntCuda.BaseZoneIndexedCollection`1.GetEnumerator" path="summary|returns"/>
+            <inheritdoc cref="M:MntCuda.Grid.Zones(System.String,System.Int32,System.Int32,System.Int32,System.Int32)"/>
+        </member>
+        <member name="M:MntCuda.BaseZoneIndexedCollection`1.GetEnumerator">
+            <summary>
+            Генератор последовательности (перечислитель) пар (<i>мультииндекс зоны</i>, 
+            <i>элемент индексируемой по зонам коллекции</i>) для организации перебора 
+            в циклах <see langword="foreach"/>.
+            </summary>
+            <returns>Пара (<i>текущий мультииндекс зоны</i>, <i>соответствующий ему элемент коллекции</i>).</returns>
+            <inheritdoc cref="M:MntCuda.Grid.Zones"/>
+        </member>
+        <member name="M:MntCuda.BaseZoneIndexedCollection`1.#ctor(MntCuda.Grid)">
+            <summary>
+            Базовый конструктор класса-коллекции. Копирует сетку индексации.
+            </summary>
+            <param name="grid">Сетка индексации.</param>
+        </member>
+        <member name="T:MntCuda.FlattenZoneIndexedCollection`1">
+            <summary>
+            Базовый класс для индексируемых по зонам классов-коллекций, в которых данные 
+            хранятся в виде линейного массива.
+            </summary>
+            <inheritdoc cref="T:MntCuda.BaseZoneIndexedCollection`1"/>
+        </member>
+        <member name="F:MntCuda.FlattenZoneIndexedCollection`1.data">
+            <summary>
+            Линейный массив размером <c>Grid.N[0] * Grid.N[1] * Grid.N[2] * Grid.Nphys</c> 
+            для хранения данных коллекции.
+            </summary>
+        </member>
+        <member name="M:MntCuda.FlattenZoneIndexedCollection`1.GetUnsafeValue(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Получить элемент по целочисленным индексам ноды и зоны.
+            Внимание - метод не безопасен и предполагает, что нода и зона, заданная индексами принадлежит сетке индексации.
+            </summary>
+            <inheritdoc cref="M:MntCuda.ZoneIndex.#ctor(System.Int32,System.Int32,System.Int32,System.Int32)"/>
+            <returns>Элемент коллекции, соответствующий заданным целочисленным индексам ноды и зоны.</returns>
+        </member>
+        <member name="M:MntCuda.FlattenZoneIndexedCollection`1.SetUnsafeValue(System.Int32,System.Int32,System.Int32,System.Int32,`0)">
+            <summary>
+            Изменить элемент заданный по целочисленным индексам ноды и зоны.
+            Внимание - метод не безопасен и предполагает, что нода и зона, заданная индексами принадлежит сетке индексации.
+            </summary>
+            <inheritdoc cref="M:MntCuda.ZoneIndex.#ctor(System.Int32,System.Int32,System.Int32,System.Int32)"/>
+            <param name="value">Присваемое значение</param>
+        </member>
+        <member name="M:MntCuda.FlattenZoneIndexedCollection`1.#ctor(MntCuda.Grid)">
+            <summary>
+            Инициализировать экземпляр класса-коллекции с размером массива, определяемым 
+            сеткой индексации для зон: <c>grid.N[0] * grid.N[1] * grid.N[2] * grid.Nphys</c>.
+            </summary>
+            <param name="grid">Сетка индексации.</param>
+        </member>
+        <member name="T:MntCuda.MntCudaException">
+            <summary>
+            Исключение, вызванное объектами ПК MNT-CUDA.
+            </summary>
+        </member>
+        <member name="M:MntCuda.MntCudaException.#ctor">
+            <summary>
+            Инициализировать новый пустой экземпляр класса <see cref="T:MntCuda.MntCudaException"/>.
+            </summary>
+        </member>
+        <member name="M:MntCuda.MntCudaException.#ctor(System.String,System.Exception)">
+            <summary>
+            Инициализировать новый экземпляр класса <see cref="T:MntCuda.MntCudaException"/> указанным 
+            сообщением об ошибке и ссылкой на внутреннее исключение, вызвавшее данное исключение.
+            </summary>
+            <param name="message">Сообщение об ошибке, указывающее причину создания исключения.</param>
+            <param name="e">Внутреннее исключение, вызвавшее текущее исключение, или <c>null</c>-ссылка, 
+                если внутреннее исключение не задано.</param>
+        </member>
+        <member name="M:MntCuda.MntCudaException.#ctor(System.String)">
+            <summary>
+            Инициализировать новый экземпляр класса <see cref="T:MntCuda.MntCudaException"/> указанным 
+            сообщением об ошибке.
+            </summary>
+            <param name="message">Сообщение об ошибке, указывающее причину создания исключения.</param>
+        </member>
+        <member name="T:MntCuda.CrossData">
+            <summary>
+            Индексируемая по зонам коллекция групповых сечений нейтронов.
+            </summary>
+        </member>
+        <member name="P:MntCuda.CrossData.CorrS">
+            <summary>
+            Массив поправочных коэффициентов к весам источников нейтронов деления на каждом поколении.
+            </summary>
+        </member>
+        <member name="M:MntCuda.CrossData.#ctor(MntCuda.Grid)">
+            <summary>
+            Инициализировать коллекцию групповых сечений нейтронов.
+            </summary>
+            <param name="grid">Сетка индексации.</param>
+            <remarks>Заполняет <see cref="P:MntCuda.CrossData.CorrS"/> единицами.</remarks>
+        </member>
+        <member name="M:MntCuda.CrossData.Svert(MntCuda.Grid,System.Func{MntCuda.ZoneIndex,MntCuda.ZoneIndex},System.Func{MntCuda.ZoneIndex,System.Int32,System.Int32},MntCuda.Functional3D)">
+            <summary>
+            Получить сечения на новой сетке индексации как результат усреднения (распараллеленно) 
+            сечений на текущей сетке с весом потока нейтронов.
+            </summary>
+            <param name="new_grid">Новая сетка индексации.</param>
+            <param name="rule_zone">Отображение индекса зоны исходной сетки в индекс зоны новой сетки.</param>
+            <param name="rule_group">Отображение индексов зоны и группы исходной сетки в индекс 
+                группы новой сетки. Если группе с индексом <c>g</c> соответствует отрицательный 
+                индекс группы, то группа <c>g</c> не участвует в суммировании.</param>
+            <param name="flux">Интергральный поток нейтронов на текущей сетке.</param>
+            <returns>Значения сечений на новой сетке.</returns>
+            <remarks>
+            <para>
+            Обозначим условие {<paramref name="rule_zone"/>(z) = z'} при суммировании как {z→z'}. <br/>
+            Обозначим условие {<paramref name="rule_group"/>(z,g) = g'} при суммировании как {(z,g)→g'}.
+            </para>
+            <para>
+            Для спектров нейтронов деления χ(z,g), где g - индекс группы, в которую нейтрон 
+            попадает после деления:<br/>
+            Fgen(z) = Сумма_{g} φ(z,g) Σgen(z,g)<br/>
+            χ'(z',g') = Сумма_{z,g: z→z', (z,g)→g'} Fgen(z) χ(z,g) / Сумма_{z: z→z'} Fgen(z)
+            </para>
+            <para>
+            Интегральный поток на новой сетке:<br/>
+            φ'(z',g') = Сумма_{z,g: z→z', (z,g)→g'} φ(z,g)
+            </para>
+            <para>
+            Для сечений поглощения, генерации и полного сечения:<br/>
+            Σ'(z',g') = Сумма_{z,g: z→z', (z,g)→g'} φ(z,g) Σ(z,g) / φ'(z',g')
+            </para>
+            <para>
+            Для сечений рассеяния:<br/>
+            Σ'(z',gi',go') = Сумма_{z,gi,go: z→z', (z,gi)→gi', (z,go)→go'} φ(z,gi) Σ(z,gi,go) / φ'(z',g')
+            </para>
+            <para>
+            Средний косинус угла рассеяния усредняется с весом скорости реакции рассеяния:<br/>
+            cos'(z',gi',go') = Сумма_{z,gi,go: z→z', (z,gi)→gi', (z,go)→go'} φ(z,gi) Σ(z,gi,go) cos(z,gi,go) / (φ'(z',gi') Σ'(z',gi',go'))
+            </para>
+            </remarks>
+        </member>
+        <member name="T:MntCuda.AnisotropyModel">
+            <summary>
+            Названия моделей учета анизотропии рассеяния.
+            </summary>
+        </member>
+        <member name="F:MntCuda.AnisotropyModel.P0">
+            <summary>Модель изотропного рассеяния.</summary>
+        </member>
+        <member name="F:MntCuda.AnisotropyModel.P1Delta">
+            <summary>Модель дельта рассеяния. В ней нейтрон рассеивается вперед с вероятностью равной среднему косинусу
+            (назад если косинус отрицательный) и изотропно во всех остальных случаях.</summary>
+        </member>
+        <member name="F:MntCuda.AnisotropyModel.P1MCNP">
+            <summary>Модель P1 с равновероятным рассеянием на интервале, вычисляемом по формулам из программы MCNP.</summary>
+        </member>
+        <member name="F:MntCuda.AnisotropyModel.P1KENO">
+            <summary>Модель P1 с равновероятным рассеянием на интервале, вычисляемом по формулам из программы KENO.</summary>
+        </member>
+        <member name="F:MntCuda.AnisotropyModel.P1Discrete">
+            <summary>Модель рассеяния на дискретный угол (косинус угла рассеяния равен среднему косинусу). </summary>
+        </member>
+        <member name="F:MntCuda.AnisotropyModel.P3Discrete">
+            <summary>Модель рассеяния на два дискретных угла заданных вероятностями. </summary>
+            <remarks>Параметры модели дискретных косинусов задаются в следующем порядке: p1, cos1, cos2.
+            p1 - вероятность рассеяния с косинусом cos1
+            1-p1 - вероятность рассеяния с косинусом cos2</remarks>
+        </member>
+        <member name="F:MntCuda.AnisotropyModel.P5Discrete">
+            <summary>Модель рассеяния на три дискретных угла заданных вероятностями. </summary>
+            <remarks>Параметры модели дискретных косинусов задаются в следующем порядке: p1, p2, cos1, cos2, cos3.
+            p1 - вероятность рассеяния с косинусом cos1
+            p2 - вероятность рассеяния с косинусом cos2
+            1-p1-p2 - вероятность рассеяния с косинусом cos3</remarks>
+        </member>
+        <member name="T:MntCuda.CrossSectionElement">
+            <summary>
+            Набор групповых макроскопических нейтронных сечений для одной физической зоны.
+            </summary>
+        </member>
+        <member name="P:MntCuda.CrossSectionElement.Ng">
+            <summary>Количество групп.</summary>
+        </member>
+        <member name="P:MntCuda.CrossSectionElement.Total">
+            <summary>
+            Полные сечения взаимодействия, используемый только при розыгрыше длины пробега. 
+            Массив по группам нейтронов, инициирующих взаимодействие.
+            </summary>
+            <remarks>
+            Данные сечения могут отличаться от суммы сечений всех реакций <see cref="P:MntCuda.CrossSectionElement.TotalData"/>.
+            Таким образом, возможно менять длину свободного пробега, не меняя скорости остальных реакций.
+            </remarks>
+        </member>
+        <member name="P:MntCuda.CrossSectionElement.Abs">
+            <summary>
+            Сечения поглощения. Массив по группам нейтронов, поглощаемых ядрами.
+            </summary>
+        </member>
+        <member name="P:MntCuda.CrossSectionElement.Gen">
+            <summary>
+            Сечения генерации - произведение сечения деления на количество вторичных 
+            нейтронов в одном акте деления. Массив по группам нейтронов, инициирующих деление.
+            </summary>
+            <remarks>
+            Произведение сечения генерации на поток равно количеству вторичных нейтронов деления в зоне. 
+            Пусть нейтрон поглотился, находясь в группе g. После поглощения нейтрон кладётся в банк 
+            нейтронов со своими координатами и с весом равным Gen[g] / Abs[g]. Этот банк нейтронов 
+            будет использован на следующей итерации для розыгрыша нового источника нейтронов. 
+            </remarks>
+        </member>
+        <member name="P:MntCuda.CrossSectionElement.Hi">
+            <summary>
+            Спектр нейтронов деления χ - плотность распределения по энергии нейтронов, 
+            рождающихся в результате деления. 
+            </summary>
+            <remarks>
+            Если отличны от нуля сечения генерации, то необходимо задать спектр нейтронов деления. 
+            Спектр вторичных нейтронов деления не зависит от энергии нейтрона, инициировавшего деление. 
+            На основе χ вычисляется группа, в которой родится нейтрон. <br/>
+            
+            Перед запуском расчёта спектр нейтронов деления должен быть нормирован на единицу: 
+            Сумма_{g} Hi[g] = 1. 
+            </remarks>
+        </member>
+        <member name="P:MntCuda.CrossSectionElement.N2N">
+            <summary>
+            Массив добавок к весам нейтронов для эффективного учёта (n,2n) реакций в реакциях рассеяния. 
+            </summary>
+            <remarks>
+            При каждом рассеянии вес нейтрона умножается на <c>(1 + N2N[g])</c>, где <c>g</c> - 
+            индекс группы налетающего нейтрона.
+            </remarks>
+        </member>
+        <member name="P:MntCuda.CrossSectionElement.Scattering">
+            <summary>
+            Матрица сечений межгрупповых переходов при рассеянии из каждой группы в каждую группу.
+            </summary>
+        </member>
+        <member name="P:MntCuda.CrossSectionElement.Cos">
+            <summary>
+            Матрица средних косинусов рассеяния из каждой группы в каждую группу.
+            </summary>
+            <remarks>
+            Реальное рассеяние нейтрона анизотропно. В MNT-CUDA используется модель дельта-рассеяния. 
+            Пусть <c>gi</c> и <c>go</c> - индексы групп налетающего и рассеянного нейтронов соответственно.
+            Если <c>Cos[gi,go] &gt; 0</c>, то нейтрон либо рассеивается вперёд (дельта-рассеяние) с 
+            вероятностью <c>Cos[gi,go]</c>, либо изотропно во все стороны с вероятностью  
+            <c>(1 - Cos[gi,go])</c>. Если <c>Cos[gi,go] &lt; 0</c>, то нейтрон либо рассеивается 
+            назад с вероятностью <c>(-Cos[gi,go])</c>, либо изотропно во все стороны с вероятностью 
+            <c>(1 + Cos[gi,go])</c>. Такая модель позволяет учесть анизотропию рассеяния нейтрона, 
+            указав только один параметр.
+            </remarks>
+        </member>
+        <member name="P:MntCuda.CrossSectionElement.AnisotropyModel">
+            <summary>
+            Модель анизотропии рассеяния
+            </summary>
+            <remarks>
+            В случае если при изменении модели учета анизотропии меняется число параметров анизотропии
+            (например вместо модели P1 устанавливается модель P5) при присвоении кидается исключение.
+            </remarks>
+        </member>
+        <member name="P:MntCuda.CrossSectionElement.AnisotropyParameters">
+            <summary>
+            Параметры учета анизотропии рассеяния.
+            </summary>
+            <remarks>Физический смысл и порядок задания параметров анизотропии рассеяния и определяется свойством <see cref="P:MntCuda.CrossSectionElement.AnisotropyModel"/>.</remarks>
+        </member>
+        <member name="P:MntCuda.CrossSectionElement.AnisotropyParametersCount">
+            <summary>
+            Количество параметров учета анизотропии рассеяния.
+            </summary>
+            <remarks>Физический смысл и порядок задания параметров анизотропии рассеяния и определяется свойством <see cref="P:MntCuda.CrossSectionElement.AnisotropyModel"/>.</remarks>
+        </member>
+        <member name="P:MntCuda.CrossSectionElement.TotalData">
+            <summary>
+            Интерфейс объекта-калькулятора только для чтения, который позволяет получить сумму сечений 
+            поглощения и рассеяния.
+            </summary>
+            <remarks>
+            Интрфейс реализован таким образом, чтобы иметь
+            единообразный интерфейс с другими сечениями (обращение по индексу группы в квадратных скобках).
+            </remarks>
+        </member>
+        <member name="T:MntCuda.CrossSectionElement.TotalCrossData">
+            <summary>
+            Класс для вычисления сумм сечений поглощения и рассеяния.
+            </summary>
+            <inheritdoc cref="P:MntCuda.CrossSectionElement.TotalData" path="remarks"/>
+        </member>
+        <member name="P:MntCuda.CrossSectionElement.TotalCrossData.Item(System.Int32)">
+            <summary>
+            Индексатор массива сумм сечений поглощения и рассеяния по индексу группы.
+            </summary>
+            <param name="g">Индекс группы.</param>
+            <returns>Сумма сечений поглощения и рассеяния для нейтронов данной группы.</returns>
+        </member>
+        <member name="M:MntCuda.CrossSectionElement.#ctor(System.Int32,System.Boolean,MntCuda.AnisotropyModel)">
+            <summary>
+            Инициализировать новый экземпляр набора нейтронных сечений.
+            </summary>
+            <param name="Ng">Количество групп.</param>
+            <param name="isPacked">флаг указывающий на необходимость использования разряженых матриц.
+            <remarks>Если число групп меньше или равно 5, то флаг игнорируется и используется не сжатый формат матриц.</remarks></param>
+            <param name="model">модель учета анизотропии рассяния</param>
+        </member>
+        <member name="M:MntCuda.CrossSectionElement.#ctor(System.IO.BinaryReader)">
+            <summary>
+            Инициализировать новый экземпляр набора нейтронных сечений, считав (десериализовав) их из бинарного потока.
+            </summary>
+            <param name="reader">Бинарный поток.</param>
+        </member>
+        <member name="M:MntCuda.CrossSectionElement.Clear">
+            <summary>
+            Инициализировать все массивы сечений, обнулив их.
+            </summary>
+        </member>
+        <member name="M:MntCuda.CrossSectionElement.ParallelAccumulate(System.Single[],MntCuda.CrossSectionElement[])">
+            <summary>
+            Распараллеленно просуммировать наборы сечений из массива <paramref name="data"/> с 
+            весами из массива <paramref name="k"/>. 
+            </summary>
+            <param name="k">Действительные коэффициенты.</param>
+            <param name="data">Наборы сечений.</param>
+            <returns>Новый набор сечений, в котором сечения просуммированы с весами отдельно для 
+                каждой группы или пары групп, а средние косинусы углов рассеяния просуммированы отдельно 
+                для каждой пары групп с дополнительным весом нормированного на итоговое значение 
+                сечения рассеяния. 
+            </returns>
+            <remarks>
+            <para>
+            Данный метод необходим, например, для быстрой интерполяции значений сечений.
+            </para>
+            <para>
+            Для полного сечения взаимодействия, сечений поглощения и генерации, спектров 
+            нейтронов деления и добавок к весам нейтронов для эффективного учёта (n,2n) реакций: <br/>
+            Результат.Σ[g] = Сумма_{i} k[i] * data[i].Σ[g]
+            </para>
+            <para>
+            Для сечений рассеяния: <br/>
+            Результат.Σрас[gi,go] = Сумма_{i} k[i] * data[i].Σрас[gi,go]
+            </para>
+            <para>
+            Средние косинусы углов рассеяния складываются с весом нормированного на итоговое значение 
+            сечения рассеяния: <br/>
+            Результат.cos[gi,go] = Сумма_{i} k[i] * data[i].Σрас[gi,go] * data[i].cos[gi,go] / Результат.Σрас[gi,go]
+            </para>
+            </remarks>
+            <exception cref="T:MntCuda.MntCudaException">При сложении наборов сечений с разным количеством групп.</exception>
+        </member>
+        <member name="M:MntCuda.CrossSectionElement.op_Addition(MntCuda.CrossSectionElement,MntCuda.CrossSectionElement)">
+            <summary>
+            Сложить наборы сечений.
+            </summary>
+            <param name="a">Первый набор сечений.</param>
+            <param name="b">Первый набор сечений.</param>
+            <returns>Результат сложения наборов сечений, в котором сечения складываются отдельно
+                для каждой группы или пары групп, а средние косинусы углов рассеяния складываются отдельно 
+                для каждой пары групп с весом нормированного на итоговое значение сечения рассеяния.</returns>
+            <exception cref="T:MntCuda.MntCudaException">При сложении наборов сечений с разным количеством групп.</exception>
+        </member>
+        <member name="M:MntCuda.CrossSectionElement.op_Subtraction(MntCuda.CrossSectionElement,MntCuda.CrossSectionElement)">
+            <summary>
+            Вычислить разность наборов сечений.
+            </summary>
+            <param name="a">Первый набор сечений (уменьшаемое).</param>
+            <param name="b">Первый набор сечений (вычитаемое).</param>
+            <returns>Результат вычитания наборов сечений, в котором сечения вычитаются отдельно
+                для каждой группы или пары групп, а средние косинусы углов рассеяния вычитаются отдельно 
+                для каждой пары групп с весом нормированного на итоговое значение сечения рассеяния.</returns>
+            <exception cref="T:MntCuda.MntCudaException">При вычитании наборов сечений с разным количеством групп.</exception>
+        </member>
+        <member name="M:MntCuda.CrossSectionElement.op_Multiply(System.Single,MntCuda.CrossSectionElement)">
+            <summary>
+            Умножить набор сечений на коэффициент.
+            </summary>
+            <param name="a">Умножаемый набор сечений.</param>
+            <param name="b">Действительный коэффициент.</param>
+            <returns>Результат умножения набора сечений на число, в котором сечения умножаются отдельно
+                для каждой группы или пары групп, а средние косинусы углов рассеяния копируются.</returns>
+        </member>
+        <member name="M:MntCuda.CrossSectionElement.op_Multiply(MntCuda.CrossSectionElement,System.Single)">
+            <summary>
+            Умножить набор сечений на коэффициент.
+            </summary>
+            <param name="a">Умножаемый набор сечений.</param>
+            <param name="b">Действительный коэффициент.</param>
+            <returns>Результат умножения набора сечений на число, в котором сечения умножаются отдельно
+                для каждой группы или пары групп, а средние косинусы углов рассеяния копируются.</returns>
+        </member>
+        <member name="M:MntCuda.CrossSectionElement.RenormHi">
+            <summary>
+            Перенормировать спектр нейтронов деления так, чтобы сумма по группам была равна единице.
+            </summary>
+        </member>
+        <member name="M:MntCuda.CrossSectionElement.CutMatrixes(System.Single)">
+            <summary>
+            Обнуление элементов матрцы расеяния, для которых вероятность ниже величины <param name="epsilon"></param>
+            </summary>
+            <param name="epsilon">Величина отношения сечения перевода к полному сечению, ниже которой элемеyты матрицы перевода следует обнулить.</param>
+        </member>
+        <member name="M:MntCuda.CrossSectionElement.Clone">
+            <summary>
+            Создать глубокую копию экземпляра класса <see cref="T:MntCuda.CrossSectionElement"/>.
+            </summary>
+            <returns>Глубокая копия данного экземпляра класса.</returns>
+        </member>
+        <member name="M:MntCuda.CrossSectionElement.Serealise(System.IO.BinaryWriter)">
+            <summary>
+            Сериализовать данный экземпляр класса <see cref="T:MntCuda.CrossSectionElement"/> в бинарный поток.
+            </summary>
+            <param name="writer">Бинарный поток, куда будет сериализован данный экземпляр класса.</param>
+            <remarks>
+            Сериализация - процесс перевода структуры данных в последовательность байтов. Обратной к 
+            операции сериализации является операция десериализации (структуризации) - создание структуры 
+            данных из битовой последовательности. Сериализация используется для передачи объектов по сети 
+            и для сохранения их в файлы. 
+            </remarks>
+        </member>
+        <member name="M:MntCuda.CrossSectionElement.Deserealise(System.IO.BinaryReader)">
+            <summary>
+            Десериализовать данный экземпляр класса <see cref="T:MntCuda.CrossSectionElement"/> из бинарного потока.
+            </summary>
+            <param name="reader">Бинарный поток, откуда будет десериализован данный экземпляр класса.</param>
+            <inheritdoc cref="M:MntCuda.CrossSectionElement.Serealise(System.IO.BinaryWriter)" path="remarks"/>
+        </member>
+        <member name="T:MntCuda.Functional3D">
+            <summary>
+            Индексируемая по зонам и группам коллекция действительных чисел.
+            </summary>
+            <remarks>
+            Экземпляры класса <see cref="T:MntCuda.Functional3D"/> используются для хранения результатов регистрации.
+            </remarks>
+        </member>
+        <member name="P:MntCuda.Functional3D.IsPacked">
+            <summary>
+            Флаг, определяющий способ хранения (упаковки) значений функционала. <br/>
+            <see langword="true"/> - в ассоциативном массиве. <br/>
+            <see langword="false"/> - в линейном массиве. 
+            </summary>
+            <remarks>
+            При изменении значения флага происходит переупаковка данных в заданное представление.
+            </remarks>
+        </member>
+        <member name="M:MntCuda.Functional3D.GetUnsafeValue(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Получить значение функционала по целочисленным индексам ноды, зоны и группы.
+            Внимание - метод не безопасен и предполагает, что нода, зона и группа заданная индексами принадлежит сетке индексации.
+            </summary>
+            <inheritdoc cref="M:MntCuda.ZoneIndex.#ctor(System.Int32,System.Int32,System.Int32,System.Int32)"/>
+            <param name="group">Целочисленный индекс группы.</param>
+            <returns>Значение функционала, соответствующее заданным целочисленным 
+                индексам ноды, зоны и группы.</returns>
+        </member>
+        <member name="M:MntCuda.Functional3D.SetUnsafeValue(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Double)">
+            <summary>
+            Изменить значение функционала по целочисленным индексам ноды, зоны и группы.
+            Внимание - метод не безопасен и предполагает, что нода, зона и группа, заданная индексами принадлежит сетке индексации.
+            </summary>
+            <inheritdoc cref="M:MntCuda.ZoneIndex.#ctor(System.Int32,System.Int32,System.Int32,System.Int32)"/>
+            <param name="group">Целочисленный индекс группы.</param>
+            <param name="value">Присваемое значение</param>
+        </member>
+        <member name="M:MntCuda.Functional3D.op_Multiply(System.Int32,MntCuda.Functional3D)">
+            <summary>
+            Умножить функционал на коэффициент.
+            </summary>
+            <param name="a">Действительный коэффициент.</param>
+            <param name="b">Умножаемый функционал.</param>
+            <returns>Новый функционал, значения которого в каждой зоне и каждой группе равны
+                произведениям соответствующих значений умножаемого функционала <paramref name="b"/> 
+                на число <paramref name="a"/>.</returns>
+        </member>
+        <member name="M:MntCuda.Functional3D.op_Multiply(MntCuda.Functional3D,MntCuda.Functional3D)">
+            <summary>
+            Перемножить два функционала по зонам и группам.
+            </summary>
+            <param name="a">Первый функционал.</param>
+            <param name="b">Второй функционал.</param>
+            <returns>Новый функционал, значения которого в каждой зоне и каждой группе равны
+                произведениям соответствующих значений умножаемых функционалов. Способ хранения 
+                (упаковки) данных у функционала-результата совпадает со способом хранения данных 
+                в функционале <paramref name="a"/>.</returns>
+            <exception cref="T:MntCuda.MntCudaException">При умножении функционалов с разным количеством нод, 
+                зон или групп.</exception>
+        </member>
+        <member name="M:MntCuda.Functional3D.op_Addition(MntCuda.Functional3D,MntCuda.Functional3D)">
+            <summary>
+            Сложить два функционала по зонам и группам.
+            </summary>
+            <param name="a">Первый функционал.</param>
+            <param name="b">Второй функционал.</param>
+            <returns>Новый функционал, значения которого в каждой зоне и каждой группе равны
+                суммам соответствующих значений складываемых функционалов. Способ хранения 
+                (упаковки) данных у функционала-результата совпадает со способом хранения данных 
+                в функционале <paramref name="a"/>.</returns>
+            <exception cref="T:MntCuda.MntCudaException">При сложении функционалов с разным количеством нод, 
+                зон или групп.</exception>
+        </member>
+        <member name="M:MntCuda.Functional3D.op_UnaryNegation(MntCuda.Functional3D)">
+            <summary>
+            Умножить функционал на (-1).
+            </summary>
+            <param name="a">Умножаемый функционал.</param>
+            <returns>Новый функционал, значения которого в каждой зоне и каждой группе равны
+                умноженным на (-1) соответствующим значениям функционала <paramref name="a"/>.</returns>
+        </member>
+        <member name="M:MntCuda.Functional3D.Renorm(System.Double)">
+            <summary>
+            Перенормировать значения функционала так, чтобы их сумма по всем зонам и группам 
+            равнялась <paramref name="val"/>.
+            </summary>
+            <param name="val">Целевое значение суммы значений функционала по всем зонам и группам.</param>
+        </member>
+        <member name="M:MntCuda.Functional3D.#ctor(MntCuda.Grid,System.Boolean)">
+            <summary>
+            Инициализировать новый пустой экземпляр класса <see cref="T:MntCuda.Functional3D"/> с 
+            размерностями заданнами с помошью <paramref name="grid"/> и способом хранения (упаковки) данных. 
+            </summary>
+            <param name="grid">Размерности создаваемого <see cref="T:MntCuda.Functional3D"/></param>
+            <param name="isPacked">
+                <see langword="true"/> - если нужно хранить данные в ассоциативном массиве. <br/>
+                <see langword="false"/> - если нужно хранить данные в линейном массиве.</param>
+        </member>
+        <member name="M:MntCuda.Functional3D.Clone">
+            <summary>
+            Создать глубокую копию экземпляра класса <see cref="T:MntCuda.Functional3D"/>.
+            </summary>
+            <returns>Глубокая копия данного экземпляра класса.</returns>
+        </member>
+        <member name="T:MntCuda.Grid">
+            <summary>
+            Экземпляр структуры <see cref="T:MntCuda.Grid"/> (сетка индексации) хранит размерность сетки 
+            нод, максимальное количество зон в нодах и максимальное количество групп, а также 
+            упрощает итерацию (перебор) по нодам, зонам и группам в циклах <see langword="foreach"/> 
+            в соответствии с заданным правилом обхода.
+            </summary>
+            <remarks>
+            <para>
+            В нейтронном движке ПК MNT-CUDA каждый нейтрон хранит текущие координаты, вес и 
+            5 целочисленных индексов: четырёхмерный <i>мультииндекс геометрической зоны</i> 
+            и <i>целочисленный индекс группы</i>. 
+            
+            Геометрическая зона - самый мелкий (неделимый) выделенный объём рассчитываемой 
+            системы. Рассчитываемая система может состоять из повторяющихся комбинаций 
+            геометрических зон, поэтому геометрические зоны объединяются в ячейки.
+            
+            Первые три целочисленных индекса мультииндекса геометрической зоны образуют 
+            трёхмерный мультииндекс, который в ПК MNT-CUDA называется <see cref="T:MntCuda.NodeIndex">
+            <i>мультииндексом ноды</i></see>. Мультииндексу ноды однозначно соответствует 
+            ячейка, но не наоборот, т.е. одна и та же ячейка может быть размещена в разных нодах.
+            
+            Геометрической зоне однозначно соответствует <i>целочисленный индекс физической 
+            зоны</i>, но не наоборот, т.е. в физическую зону может входить несколько 
+            геометрических зон. 
+            
+            Три целочисленных индекса мультииндекса ноды вместе с целочисленным индексом 
+            физической зоны образуют четырёхмерный <i>мультииндекс физической зоны</i>. 
+            
+            Мультииндексу физической зоны однозначно соответствуют набор многогрупповых сечений. 
+            </para>
+            
+            <para>
+            В ПК MNT-CUDA информация о рассчитываемой системе распределена по нескольким 
+            отдельным классам-коллекциям.
+            </para>
+            
+            <list type="number">
+              <item>
+                <description>Мультииндексу физический зоны ставится в соответствие ссылка на 
+                <see cref="T:MntCuda.CrossSectionElement">набор многогрупповых сечений</see> в экземпляре 
+                класса <see cref="T:MntCuda.CrossData"/>.</description>
+              </item>
+              <item>
+                <description>Мультииндексу ноды ставятся в соответствие ссылка на <see cref="T:MntCuda.HardGeometry.Cell">ячейку</see> 
+                и ссылка на <see cref="T:MntCuda.HardGeometry.InterfaceObject">интерфейсный объект</see> в экземпляре класса 
+                <see cref="T:MntCuda.HardGeometry.GeometrySystem"/>.</description>
+              </item>
+              <item>
+                <description>Мультииндексу ноды ставятся в соответствие ссылка на <see cref="T:MntCuda.Source">источник</see> 
+                в экземпляре класса <see cref="T:MntCuda.SourceData"/>.</description>
+              </item>
+              <item>
+                <description>В MNT-CUDA мультииндексу зоны ставится в соответствие результаты 
+                регистрации в экземпляре класса <see cref="T:MntCuda.ResultsData"/>, т.е. регистрация 
+                осуществляется по зонам.</description>
+              </item>
+            </list>
+            
+            <para>
+            Такое распределение рассчитываемой системы по отдельным коллекциям позволяет 
+            развязать геометрический, физический и регистрационный субмодули в нейтронном движке. 
+            Физический субмодуль выдаёт полное сечение и разыгрывает процессы взаимодействия. 
+            Физическому субмодулю ничего не известно о геометрии. Ему известно только, в какой 
+            ноде и физической зоне находится нейтрон и какой группе принадлежит. 
+            Геометрическому субмодулю ничего не известно о сечениях. 
+            Регистрационному модулю ничего не известно ни о геометрии, ни о сечениях. 
+            </para>
+            
+            <para>
+            Мультииндексу ноды можно однозначно сопоставить ссылку на ячейку, ссылку на 
+            интерфейсный объект и массив ссылок на наборы многогрупповых сечений, т.е. 
+            мультииндексу ноды можно однозначно сопоставить ограниченный объём пространства 
+            с определённой геометрией и наборами многогрупповых сечений, который можно 
+            было бы назвать <i>нодой</i>. Поэтому в ядре ПК MNT-CUDA есть только 
+            мультииндекс ноды и нет полноценного класса ноды. Однако у класса 
+            <see cref="T:MntCuda.HardGeometry.GeometrySystem"/> реализованы индексаторы, которые по мультииндексу 
+            ноды или целочисленным индексам ноды возвращают <see cref="T:MntCuda.HardGeometry.GeometrySystem.GeoNode">
+            <i>геоноду</i></see>, содержащую ссылки на ячейку и интерфейсный 
+            объект ноды с данным индексом, т.е. информацию только о геометрии данной ноды. 
+            Данная структура реализована с целью упрощения доступа к ячейкам и интерфейсным
+            объектам.
+            </para>
+            
+            <para>
+            Геометрические связи между ячейками задаются в трёхмерном массиве ссылок на 
+            интерфейсные объекты, поэтому граничащие между собой ячейки не обязаны иметь 
+            мультииндексы нод, отличающиеся на единицу по одному из измерений. 
+            
+            Например, в системе может быть четыре ячейки с мультииндексами нод (0,0,0), 
+            (0,0,1), (0,0,2) и (0,0,3), при этом ячейка с индексом (0,0,0) может 
+            располагаться внутри ячейки с индексом (0,0,1) и граничить только с ней, а 
+            ячейки с индексами (0,0,1), (0,0,2) и (0,0,3) могут граничить друг с другом.
+            </para>
+            </remarks>
+        </member>
+        <member name="F:MntCuda.Grid.m_N">
+            <remarks>
+            Для того, чтобы не только сам <see langword="private"/> массив <c>m_N</c>, 
+            но и его элементы были доступны только для чтения, введено <see langword="public"/> 
+            свойство <c>N</c> с типом <c>IReadOnlyList</c>.
+            </remarks>
+        </member>
+        <member name="P:MntCuda.Grid.N">
+            <summary>
+            Размерность трёхмерной сетки нод (массив из трёх элементов).
+            </summary>
+            <remarks>
+            При перечислении первый индекс <c>i</c> изменяется от <c>0</c> до <c>N[0]-1</c> 
+            включительно, второй индекс <c>j</c> - от <c>0</c> до <c>N[1]-1</c>, третий 
+            индекс <c>k</c> - от <c>0</c> до <c>N[2]-1</c>.
+            </remarks>
+        </member>
+        <member name="P:MntCuda.Grid.Ng">
+            <summary>
+            Максимально допустимое количество групп. 
+            </summary>
+            <remarks>
+            При перечислении индекс группы изменяется от <c>0</c> до <c>Ng-1</c> включительно.
+            </remarks>
+        </member>
+        <member name="P:MntCuda.Grid.Nphys">
+            <summary>
+            Максимально допустимое количество зон в нодах. 
+            </summary>
+            <remarks>
+            При перечислении индекс зоны изменяется от <c>0</c> до <c>Nphys-1</c> включительно.
+            </remarks>
+        </member>
+        <member name="M:MntCuda.Grid.Nodes">
+            <summary>
+            Генератор последовательности (перечислитель) мультииндексов нод для 
+            организации перебора в циклах <see langword="foreach"/>. 
+            </summary>
+            <returns>Текущий мультииндекс ноды.</returns>
+            <remarks>
+            Порядок перебора фиксирован: <c>"ijk"</c> - сначала изменяется <c>k</c>, затем 
+            <c>j</c>, затем <c>i</c>.
+            </remarks>
+        </member>
+        <member name="M:MntCuda.Grid.Nodes(System.String,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Генератор последовательности (перечислитель) мультииндексов нод в соответствии 
+            с заданным правилом обхода для организации перебора в циклах <see langword="foreach"/>.
+            </summary>
+            <param name="rule">Правило обхода (порядок перебора) сетки нод, например, <c>"ijk"</c> - 
+            сначала изменяется <c>k</c>, затем <c>j</c>, затем <c>i</c>.
+            .</param>
+            <param name="i">Фиксированное значение целочисленного индекса ноды <c>i</c> для 
+                случая, когда <c>i</c> отсутствует в <c>rule</c>.</param>
+            <param name="j">Фиксированное значение целочисленного индекса ноды <c>j</c> для 
+                случая, когда <c>j</c> отсутствует в <c>rule</c>.</param>
+            <param name="k">Фиксированное значение целочисленного индекса ноды <c>k</c> для 
+                случая, когда <c>k</c> отсутствует в <c>rule</c>.</param>
+            <returns>Текущий мультииндекс ноды.</returns>
+        </member>
+        <member name="M:MntCuda.Grid.Zones">
+            <summary>
+            Генератор последовательности (перечислитель) мультииндексов зон для 
+            организации перебора в циклах <see langword="foreach"/>. 
+            </summary>
+            <returns>Текущий мультииндекс зоны.</returns>
+            <remarks>
+            Порядок перебора фиксирован: <c>"ijkz"</c> - сначала изменяется <c>nz</c>, затем 
+            <c>k</c>, затем <c>j</c>, затем <c>i</c>.
+            </remarks>
+        </member>
+        <member name="M:MntCuda.Grid.Zones(System.String,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Генератор последовательности (перечислитель) мультииндексов зон 
+            в соответствии с заданным правилом обхода для организации перебора 
+            в циклах <see langword="foreach"/>.
+            </summary>
+            <param name="rule">Правило обхода (порядок перебора) сетки зон, например, 
+                <c>"ijkz"</c> - сначала изменяется <c>nz</c>, затем <c>k</c>, затем <c>j</c>, 
+                затем <c>i</c>.</param>
+            <param name="z">Фиксированное значение целочисленного индекса зоны <c>z</c> для 
+                случая, когда <c>z</c> отсутствует в <c>rule</c>.</param>
+            <returns>Текущий мультииндекс зоны.</returns>
+            <inheritdoc cref="M:MntCuda.Grid.Nodes(System.String,System.Int32,System.Int32,System.Int32)"/>
+        </member>
+        <member name="M:MntCuda.Grid.ZonesAndGroups">
+            <summary>
+            Генератор последовательности (перечислитель) мультииндексов зон и индексов 
+            групп для организации перебора в циклах <see langword="foreach"/>.
+            </summary>
+            <returns>Пара (текущий мультииндекс зоны, текущий индекс группы).</returns>
+            <remarks>
+            Порядок перебора фиксирован: <c>"ijkzg"</c> - сначала изменяется <c>g</c>, затем 
+            <c>nz</c>, затем <c>k</c>, затем <c>j</c>, затем <c>i</c>.
+            </remarks>
+        </member>
+        <member name="M:MntCuda.Grid.ZonesAndGroups(System.String,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Генератор последовательности (перечислитель) мультииндексов зон и 
+            индексов групп в соответствии с заданным правилом обхода для 
+            организации перебора в циклах <see langword="foreach"/>.
+            </summary>
+            <param name="rule">Правило обхода (порядок перебора) сетки зон и индексов групп, 
+                например, <c>"ijkzg"</c> - сначала изменяется <c>g</c>, затем <c>nz</c>, затем 
+                <c>k</c>, затем <c>j</c>, затем <c>i</c>.</param>
+            <param name="g">Фиксированное значение индекса группы <c>g</c> для 
+                случая, когда <c>g</c> отсутствует в <c>rule</c>.</param>
+            <returns>Пара (текущий мультииндекс зоны, текущий индекс группы).</returns>
+            <inheritdoc cref="M:MntCuda.Grid.Zones(System.String,System.Int32,System.Int32,System.Int32,System.Int32)"/>
+        </member>
+        <member name="M:MntCuda.Grid.PrintFunctionalFile(System.Func{MntCuda.ZoneIndex,System.Int32,System.Object},System.String,System.String,System.String[],System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Создать текстовый файл с таблицей значений функции на зонах и группах.
+            </summary>
+            <param name="action">Функция, принимающая мультииндекс зоны и индекс группы, и возвращающая 
+                значение, которое будет записано в текстовый файл.</param>
+            <param name="dest">Путь к файлу.</param>
+            <param name="separators">Массив разделителей, которые будут вставлены в файле между 
+                значениями функции. Если <c>rule = "ijkzg"</c>, то <c>separators[4]</c> будет вставлен 
+                между значениями функции <c>action</c>, соответствующими соседним индексам групп <c>g</c>, 
+                <c>separators[3]</c> будет вставлен между значениями функции <c>action</c>, 
+                соответствующими соседним целочисленным индексам зон <c>nz</c> и т.д.</param>
+            <inheritdoc cref="M:MntCuda.Grid.ZonesAndGroups(System.String,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)"/>
+        </member>
+        <member name="M:MntCuda.Grid.#ctor(System.Collections.Generic.IReadOnlyList{System.Int32},System.Int32,System.Int32)">
+            <summary>
+            Инициализировать новый экземпляр класса <see cref="T:MntCuda.Grid"/> с заданными размерностями.
+            </summary>
+            <param name="N">Размерность трёхмерной сетки нод (массив из трёх элементов).</param>
+            <param name="Nphys">Максимально допустимое количество зон в нодах.</param>
+            <param name="Ng">Максимально допустимое количество групп в зонах.</param>
+        </member>
+        <member name="M:MntCuda.Grid.#ctor(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Инициализировать новый экземпляр класса <see cref="T:MntCuda.Grid"/> с заданными размерностями.
+            </summary>
+            <param name="Nx">Размерность первого индекса трёхмерной сетки нод .</param>
+            <param name="Ny">Размерность второго индекса трёхмерной сетки нод .</param>
+            <param name="Nz">Размерность третьего индекса трёхмерной сетки нод .</param>
+            <param name="Nphys">Максимально допустимое количество зон в нодах.</param>
+            <param name="Ng">Максимально допустимое количество групп в зонах.</param>
+        </member>
+        <member name="M:MntCuda.Grid.Clone">
+            <summary>
+            Создать глубокую копию экземпляра класса <see cref="T:MntCuda.Grid"/>.
+            </summary>
+            <returns>Глубокая копия данного экземпляра класса.</returns>
+        </member>
+        <member name="M:MntCuda.Grid.ContainsNode(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Проверить, лежит ли нода с данными целочисленными индексами в текущей сетке индексации.
+            </summary>
+            <returns>Результат проверки на вхождение ноды в сетку.</returns>
+            <inheritdoc cref="M:MntCuda.NodeIndex.#ctor(System.Int32,System.Int32,System.Int32)"/>
+        </member>
+        <member name="M:MntCuda.Grid.ContainsNode(MntCuda.NodeIndex)">
+            <summary>
+            Проверить, лежит ли данный мультииндекс ноды в текущей сетке индексации.
+            </summary>
+            <param name="node">Проверяемый мультииндекс ноды.</param>
+            <inheritdoc cref="M:MntCuda.Grid.ContainsNode(System.Int32,System.Int32,System.Int32)" path="returns"/>
+        </member>
+        <member name="M:MntCuda.Grid.ContainsZone(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Проверить, лежит ли зона с данными целочисленными индексами в текущей сетке индексации.
+            </summary>
+            <returns>Результат проверки на вхождение зоны в сетку.</returns>
+            <inheritdoc cref="M:MntCuda.ZoneIndex.#ctor(System.Int32,System.Int32,System.Int32,System.Int32)"/>
+        </member>
+        <member name="M:MntCuda.Grid.ContainsZone(MntCuda.ZoneIndex)">
+            <summary>
+            Проверить, лежит ли данный мультииндекс зоны в текущей сетке индексации.
+            </summary>
+            <param name="zone">Проверяемый мультииндекс зоны.</param>
+            <inheritdoc cref="M:MntCuda.Grid.ContainsZone(System.Int32,System.Int32,System.Int32,System.Int32)" path="returns"/>
+        </member>
+        <member name="M:MntCuda.Grid.ContainsZoneAndGroup(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Проверить, лежат ли зона и группа с данными целочисленными индексами в текущей сетке индексации.
+            </summary>
+            <param name="group">Проверяемый индекс группы.</param>
+            <returns>Результат проверки на вхождение зоны и группы в сетку.</returns>
+            <inheritdoc cref="M:MntCuda.ZoneIndex.#ctor(System.Int32,System.Int32,System.Int32,System.Int32)"/>
+        </member>
+        <member name="M:MntCuda.Grid.ContainsZoneAndGroup(MntCuda.ZoneIndex,System.Int32)">
+            <summary>
+            Проверить, лежит ли данный мультииндекс зоны и индекс группы в текущей сетке индексации.
+            </summary>
+            <param name="zone">Проверяемый мультииндекс зоны.</param>
+            <param name="group">Проверяемый индекс группы.</param>
+            <inheritdoc cref="M:MntCuda.Grid.ContainsZoneAndGroup(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)" path="returns"/>
+        </member>
+        <member name="T:MntCuda.HardGeometry.Cell">
+            <summary>
+            Класс геометрической ячейки.
+            </summary>
+            <remarks>
+            <para>
+            В ПК MNT-CUDA <see cref="T:MntCuda.HardGeometry.Cell">геометрическая ячейка</see> представляет 
+            собой ориентированный граф, узлами которого являются 
+            <see cref="T:MntCuda.HardGeometry.Zone">геометрические зоны</see>, 
+            <see cref="T:MntCuda.HardGeometry.InterfaceZone">интерфейсные зоны</see> или 
+            <see cref="T:MntCuda.HardGeometry.InterfaceFunction">интерфейсные функции</see>, а рёбрами - 
+            <see cref="T:MntCuda.HardGeometry.Surface">ориентированные поверхности</see>. Находясь в ячейке, 
+            нейтрон переходит из зоны в зону (из узла в узел), пересекая поверхности (рёбра).
+            </para><para>
+            <i>Геометрические зоны</i> являются объёмами пространства, ограниченными 
+            ориентированными поверхностями с нормалями, направленными из данной 
+            геометрической зоны. Геометрические зоны хранят индекс соответствующей 
+            физической зоны, т.е., фактически, неразрешённую ссылку на сечения и 
+            регистрационную зону.
+            </para><para>
+            <i>Интерфейсные зоны</i> - узлы орграфа, куда попадают нейтроны, вылетевшие 
+            из текущей ячейки или влетевшие в текущую ячейку из других ячеек. 
+            Интерфейсная зона хранит уникальный в данной ячейке целочисленный индекс 
+            интерфейсной зоны - неразрешённую ссылку на интерфейсную функцию в 
+            <see cref="T:MntCuda.HardGeometry.InterfaceObject">интерфейсном объекте</see>, реализующую 
+            граничное условие для тока, направленного из данной ячейки. Для нейтронов, 
+            попавших в интерфейсную зону из данной ячейки, выполняется соответствующая 
+            интерфейсная функция в интерфейсном объекте, которая может, например, 
+            поместить их в интерфейсную зону другой ячейки.  
+            </para><para>
+            Если более двух геометрических зон имеют общую границу, то необходима 
+            интерфейсная функция, вычисляющая, куда попадёт нейтрон при пересечении 
+            этой поверхности. Внутри ячейки <i>интерфейсная функция</i> может иметь 
+            только рёбра, входящие в неё. Т.е. ориентированные поверхности могут вести 
+            в интерфейсную функцию, но далее интерфейсная функция пересылает нейтрон 
+            в нужную геометрическую зону.
+            </para><para>
+            Геометрическая ячейка реализована таким образом для обеспечения переносимости: 
+            если в системе имеется несколько ячеек с одинаковой или похожей геометрией, 
+            находящихся в разных местах и состоящих из различных материалов, то достаточно 
+            один раз описать геометрию ячейки, поскольку сечения можно будет прописать 
+            в <see cref="T:MntCuda.CrossData"/>, а взаимосвязи ячеек между собой в системе - в 
+            <see cref="P:MntCuda.HardGeometry.GeometrySystem.Interfaces"/>. 
+            </para>
+            </remarks>
+        </member>
+        <member name="P:MntCuda.HardGeometry.Cell.Zones">
+            <summary>
+            Коллекция геометрических зон в ячейке.
+            </summary>
+        </member>
+        <member name="P:MntCuda.HardGeometry.Cell.Interface">
+            <summary>
+            Коллекция интерфейсных зон в ячейке.
+            </summary>
+        </member>
+        <member name="P:MntCuda.HardGeometry.Cell.MaxMaterial">
+            <summary>
+            Максимальный имеющийся в ячейке индекс физический зоны.
+            </summary>
+            <remarks>Автор: Никита</remarks>
+        </member>
+        <member name="P:MntCuda.HardGeometry.Cell.InternalPoint">
+            <summary>
+            Внутренняя точка фрагмента, обеспечиваящая возможность вычисления принодлежности зоне путем трассировки луча
+            </summary>
+        </member>
+        <member name="M:MntCuda.HardGeometry.Cell.#ctor(System.Int32)">
+            <summary>
+            Инициализировать новую ячейку с заданным количеством интерфейсных зон.
+            </summary>
+            <param name="interfaceCount">Количество интерфейсных зон.</param>
+        </member>
+        <member name="M:MntCuda.HardGeometry.Cell.IsInterface(MntCuda.HardGeometry.ZoneGraphNode)">
+            <summary>
+            Проверить, является ли геометрическая зона <paramref name="z"/> интерфейсной.
+            </summary>
+            <param name="z">Проверяемая геометрическая зона.</param>
+            <returns>Результат проверки.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.Cell.AddSharedSurface(MntCuda.HardGeometry.BaseGeometrySurface,System.Collections.Generic.IEnumerable{MntCuda.HardGeometry.Zone},MntCuda.HardGeometry.ZoneGraphNode,MntCuda.HardGeometry.InterfaceFunction,System.Int32)">
+            <summary>
+            Добавить поверхность (набор ориентированных поверхностей) между 
+            несколькими геометрическими зонами и единственной геометрической или интерфейсной зоной: 
+            каждой зоне из набора <paramref name="from"/> будет поставлена ориентированная 
+            поверхность в зону <paramref name="dest"/>, а зоне <paramref name="dest"/> 
+            будет поставлена ориентированная поверхность в интерфейсную функцию <paramref name="f"/>.
+            </summary>
+            <param name="geom">Геометрическая ориентированная поверхность.</param>
+            <param name="from">Набор геометрических зон.</param>
+            <param name="dest">Геометрическая или интерфейсная зона.</param>
+            <param name="f">Интерфейсная функция, идентифицирующую нужную геометрическую 
+                зону из набора <paramref name="from"/>.</param>
+            <param name="registrationZone">Индекс регистрационной зоны для регистрации 
+                тока через поверхность.</param>
+        </member>
+        <member name="M:MntCuda.HardGeometry.Cell.AddSurface(MntCuda.HardGeometry.BaseGeometrySurface,MntCuda.HardGeometry.ZoneGraphNode,MntCuda.HardGeometry.ZoneGraphNode,System.Int32)">
+            <summary>
+            Добавить поверхность (две противоположно направленные ориентированные 
+            поверхности) между двумя зонами, одна из которых может быть интерфейсной.
+            </summary>
+            <param name="geom">Геометрическая ориентированная поверхность.</param>
+            <param name="zone1">Первая зона.</param>
+            <param name="zone2">Вторая зона.</param>
+            <param name="registrationZone">Индекс регистрационной зоны для регистрации 
+                тока через поверхность.</param>
+        </member>
+        <member name="M:MntCuda.HardGeometry.Cell.AddOneSideSurface(MntCuda.HardGeometry.BaseGeometrySurface,MntCuda.HardGeometry.ZoneGraphNode,MntCuda.HardGeometry.GraphNode,System.Int32)">
+            <summary>
+            <b>Небезопасный метод!</b> Добавить ориентированную поверхность между двумя геометрическими зонами, геометрической зоной 
+            и интерфейсной зоной, геометрической или интерфейсной зоной и интерфейсной функцией. 
+            Рекомендуется использовать <see cref="M:MntCuda.HardGeometry.Cell.AddSurface(MntCuda.HardGeometry.BaseGeometrySurface,MntCuda.HardGeometry.ZoneGraphNode,MntCuda.HardGeometry.ZoneGraphNode,System.Int32)"/> 
+            кроме тех случаев, когда принципиально необходимо добавить ориентированную поверхность 
+            из <paramref name="zone1"/> в <paramref name="zone2"/> без пары к ней из 
+            <paramref name="zone2"/> в <paramref name="zone1"/>.
+            </summary>
+            <param name="geom">Геометрическая ориентированная поверхность.</param>
+            <param name="zone1">Исходная геометрическая или интерфейсная зона.</param>
+            <param name="zone2">Целевая геометрическая зона, интерфейсная зона либо интерфейсная функция.</param>
+            <param name="registrationZone">Индекс регистрационной зоны для регистрации 
+                тока через поверхность.</param>
+        </member>
+        <member name="M:MntCuda.HardGeometry.Cell.AddZone(System.Byte)">
+            <summary>
+            Добавить в ячейку новую геометрическую зону.
+            </summary>
+            <param name="materialZone">Индекс физической зоны, в которую входит данная геометрическая зона.</param>
+            <returns>Новая добавленная геометрическая зона.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.Cell.MoveCoordinates(System.Single,System.Single)">
+            <summary>
+            Параллельный перенос всех поверхностей во всех зонах ячейки.
+            </summary>
+            <inheritdoc cref="M:MntCuda.HardGeometry.BaseGeometrySurface.MoveCoordinates(System.Single,System.Single)"/>
+        </member>
+        <member name="T:MntCuda.HardGeometry.GeometrySystem">
+            <summary>
+            Детальная геометрическая система.
+            </summary>
+            <remarks>
+            Детальная геометрическая система описывает топологию рассчитываемого 
+            объекта в целом. Она содержит две индексируемые по нодам 
+            коллекции: коллекцию <see cref="T:MntCuda.HardGeometry.Cell">геометрических ячеек</see> 
+            <see cref="P:MntCuda.HardGeometry.GeometrySystem.Cells"/> - геометрических шаблонов, функционально схожих 
+            с чертежами, определяющих относительное положение поверхностей внутри 
+            нод и взаимосвязь зон, граничащих по этим поверхностям, - и коллекцию 
+            <see cref="T:MntCuda.HardGeometry.InterfaceObject">интерфейсных объектов</see> 
+            <see cref="P:MntCuda.HardGeometry.GeometrySystem.Interfaces"/> - коллекций <see cref="T:MntCuda.HardGeometry.InterfaceFunction">
+            интерфейсных функций</see>, связывающих ноды между собой в единую систему.
+            </remarks>
+        </member>
+        <member name="T:MntCuda.HardGeometry.GeometrySystem.GeoNode">
+            <summary>
+            <i>Геонода</i> (геометрическая нода) - структура для удобного доступа к 
+            геометрии ячейки в данной ноде и геометрическим связям данной ноды в системе.
+            </summary>
+        </member>
+        <member name="P:MntCuda.HardGeometry.GeometrySystem.GeoNode.Cell">
+            <summary>Геометрическая ячейка.</summary>
+        </member>
+        <member name="P:MntCuda.HardGeometry.GeometrySystem.GeoNode.Interface">
+            <summary>Интерфейс ноды.</summary>
+        </member>
+        <member name="M:MntCuda.HardGeometry.GeometrySystem.GetUnsafeValue(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Получить геоноду по целочисленным индексам ноды.
+            Внимание - метод не безопасен и предполагает, что нода, заданная индексами принадлежит сетке индексации.
+            </summary>
+            <inheritdoc cref="M:MntCuda.NodeIndex.#ctor(System.Int32,System.Int32,System.Int32)"/>
+            <returns>Геонода, соответствующая данным целочисленным индексам ноды.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.GeometrySystem.SetUnsafeValue(System.Int32,System.Int32,System.Int32,MntCuda.HardGeometry.GeometrySystem.GeoNode)">
+            <summary>
+            Изменить геоноду заданную по целочисленным индексам ноды.
+            Внимание - метод не безопасен и предполагает, что нода, заданная индексами принадлежит сетке индексации.
+            </summary>
+            <inheritdoc cref="M:MntCuda.NodeIndex.#ctor(System.Int32,System.Int32,System.Int32)"/>
+            <param name="value">Присваемая геонода</param>
+        </member>
+        <member name="T:MntCuda.HardGeometry.GeometrySystem.CellsCollection">
+            <summary>
+            Коллекция геометрических ячеек, описывающих геометрию нод.
+            </summary>
+        </member>
+        <member name="M:MntCuda.HardGeometry.GeometrySystem.CellsCollection.GetUnsafeValue(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Получить элемент по целочисленным индексам ноды.
+            Внимание - метод не безопасен и предполагает, что нода, заданная индексами принадлежит сетке индексации.
+            </summary>
+            <inheritdoc cref="M:MntCuda.NodeIndex.#ctor(System.Int32,System.Int32,System.Int32)"/>
+            <returns>Элемент коллекции, соответствующий заданным целочисленным индексам ноды.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.GeometrySystem.CellsCollection.SetUnsafeValue(System.Int32,System.Int32,System.Int32,MntCuda.HardGeometry.Cell)">
+            <summary>
+            Изменить элемент заданный по целочисленным индексам ноды.
+            Внимание - метод не безопасен и предполагает, что нода, заданная индексами принадлежит сетке индексации.
+            </summary>
+            <inheritdoc cref="M:MntCuda.NodeIndex.#ctor(System.Int32,System.Int32,System.Int32)"/>
+            <param name="value">Присваемое значение</param>
+        </member>
+        <member name="P:MntCuda.HardGeometry.GeometrySystem.Cells">
+            <summary>
+            Коллекция геометрических ячеек, описывающих геометрию нод.
+            </summary>
+        </member>
+        <member name="P:MntCuda.HardGeometry.GeometrySystem.Interfaces">
+            <summary>
+            Коллекция интерфейсных объектов, описывающих геометрические связи нод.
+            </summary>
+        </member>
+        <member name="M:MntCuda.HardGeometry.GeometrySystem.#ctor(MntCuda.Grid)">
+            <summary>
+            Инициализировать детальную геометрическую систему.
+            </summary>
+            <param name="grid">Сетка индексации.</param>
+        </member>
+        <member name="M:MntCuda.HardGeometry.GeometrySystem.GetMaxInterfaceCount">
+            <summary>
+            Найти максимальное в системе количество интерфейсных зон в ячейках.
+            </summary>
+            <returns>Максимальное количество интерфейсных зон в ячейках системы.</returns>
+        </member>
+        <member name="T:MntCuda.HardGeometry.GraphNode">
+            <summary>
+            Базовый класс для классов узлов орграфа геометрической ячейки: 
+            геометрических зон, интерфейсных зон и интерфейсных функций.
+            </summary>
+        </member>
+        <member name="T:MntCuda.HardGeometry.ZoneGraphNode">
+            <summary>
+            Базовый класс для классов геометрических и интерфейсных зон.
+            </summary>
+        </member>
+        <member name="T:MntCuda.HardGeometry.Operation">
+            <summary>Список кодов операций.</summary>
+        </member>
+        <member name="T:MntCuda.HardGeometry.Register">
+            <summary>
+            Названия характеристик нейтрона, которые можно изменять в интерфейсных функциях.
+            </summary>
+            <remarks>
+            Названия регистров, описывающих состояние нейтрона.
+            </remarks>
+        </member>
+        <member name="F:MntCuda.HardGeometry.Register.nx">
+            <summary>Целочисленный индекс ноды по первой координате.</summary>
+        </member>
+        <member name="F:MntCuda.HardGeometry.Register.ny">
+            <summary>Целочисленный индекс ноды по второй координате.</summary>
+        </member>
+        <member name="F:MntCuda.HardGeometry.Register.nz">
+            <summary>Целочисленный индекс ноды по третьей координате.</summary>
+        </member>
+        <member name="F:MntCuda.HardGeometry.Register.wx">
+            <summary><i>x</i>-координата нормированного вектора скорости нейтрона.</summary>
+        </member>
+        <member name="F:MntCuda.HardGeometry.Register.wy">
+            <summary><i>y</i>-координата нормированного вектора скорости нейтрона.</summary>
+        </member>
+        <member name="F:MntCuda.HardGeometry.Register.wz">
+            <summary><i>z</i>-координата нормированного вектора скорости нейтрона.</summary>
+        </member>
+        <member name="F:MntCuda.HardGeometry.Register.x">
+            <summary><i>x</i>-координата нейтрона.</summary>
+        </member>
+        <member name="F:MntCuda.HardGeometry.Register.y">
+            <summary><i>y</i>-координата нейтрона.</summary>
+        </member>
+        <member name="F:MntCuda.HardGeometry.Register.z">
+            <summary><i>z</i>-координата нейтрона.</summary>
+        </member>
+        <member name="F:MntCuda.HardGeometry.Register.nphis">
+            <summary>
+            Внутренний индекс геометрической зоны в нейтронном движке, где 
+            геометрические зоны имеют сплошную нумерацию.
+            </summary>
+        </member>
+        <member name="F:MntCuda.HardGeometry.Register.ng">
+            <summary>Целочисленный индекс энергетической группы.</summary>
+        </member>
+        <member name="F:MntCuda.HardGeometry.Register.w">
+            <summary>Вес нейтрона.</summary>
+        </member>
+        <member name="F:MntCuda.HardGeometry.Register.nothing">
+            <summary>Вспомогательная характеристика, обеспечивающая удаление записываемого числа.</summary>
+        </member>
+        <member name="F:MntCuda.HardGeometry.Register.rcmd">
+            <summary>Счётчик команд - указатель на номер команды в последовательности выполняемых команд.</summary>
+        </member>
+        <member name="T:MntCuda.HardGeometry.InterfaceFunction">
+            <summary>
+            Интерфейсная функция - процедура или функция, которая может 
+            вызываться при пересечении нейтроном ориентированной поверхности 
+            и может изменять характеристики нейтрона, перечисленные в 
+            <see cref="T:MntCuda.HardGeometry.Register"/> или возвращать значение. Является узлом 
+            в орграфе геометрической ячейки.
+            </summary>
+            <remarks>
+            <para>
+            Интерфейсная функция реализует граничное условие для одностороннего 
+            тока через границу геометрической зоны.
+            </para><para>
+            У каждого нейтрона имеются регистры, хранящие его состояние. 
+            Для каждого нейтрона заводится стек <see langword="float"/>. 
+            И для каждого нейтрона имеется поток команд: от точки входа до 
+            терминального оператора.
+            </para><para>
+            Интерфейсная функция принимает состояние нейтрона и дополнительные 
+            аргументы и возвращает изменённое состояние нейтрона. Соответственно, 
+            композиция интерфейсных функций есть последовательное их выполнение.
+            Если интерфейсная функция возвращает значение, то это значение (или 
+            значения) записывается в стек нейтрона, т.е. количество значений, 
+            хранящихся в стеке нейтрона, увеличивается.
+            </para><para>
+            Интерфейсная функция - это однонаправленный список: в ней хранится 
+            как текущая операция с аргументами-операндами, так и ссылка на 
+            предыдущую (как с точки зрения построения, так и с точки зрения 
+            выполнения) интерфейсную функцию. Во внешний нейтронный движок 
+            передаётся интерфейсная функция, преобразованная в последовательность 
+            байт-кодов операций, включающих коды операций и значения параметров 
+            операций.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:MntCuda.HardGeometry.InterfaceFunction.TargetFunction">
+            <summary>
+            Предыдущая интерфейсная функция в однонаправленном списке 
+            интерфейсных функций.
+            </summary>
+        </member>
+        <member name="P:MntCuda.HardGeometry.InterfaceFunction.OperationName">
+            <summary>
+            Название операции, выполняемой текущей интерфейсной функцией.
+            </summary>
+        </member>
+        <member name="P:MntCuda.HardGeometry.InterfaceFunction.Par1">
+            <summary>
+            Значение первого параметра операции, выполняемой текущей 
+            интерфейсной функцией. Входит в байт-код операции.
+            </summary>
+        </member>
+        <member name="P:MntCuda.HardGeometry.InterfaceFunction.Par2">
+            <summary>
+            Значение второго параметра операции, выполняемой текущей 
+            интерфейсной функцией. Входит в байт-код операции.
+            </summary>
+        </member>
+        <member name="P:MntCuda.HardGeometry.InterfaceFunction.Par3">
+            <summary>
+            Значение третьего параметра операции, выполняемой текущей 
+            интерфейсной функцией. Входит в байт-код операции.
+            </summary>
+        </member>
+        <member name="P:MntCuda.HardGeometry.InterfaceFunction.Par4">
+            <summary>
+            Значение четвёртого параметра операции, выполняемой текущей 
+            интерфейсной функцией. Входит в байт-код операции.
+            </summary>
+        </member>
+        <member name="P:MntCuda.HardGeometry.InterfaceFunction.Length">
+            <summary>
+            Длина текущей интерфейсной функции в инструкциях.
+            </summary>
+        </member>
+        <member name="P:MntCuda.HardGeometry.InterfaceFunction.StackShift">
+            <summary>
+            Насколько текущая интерфейсная функция сдвигает стек.
+            </summary>
+        </member>
+        <member name="P:MntCuda.HardGeometry.InterfaceFunction.ArgsCount">
+            <summary>
+            Количество аргументов в стеке, которые ожидаются для 
+            корректной работы текущей интерфейсной функции.
+            </summary>
+        </member>
+        <member name="P:MntCuda.HardGeometry.InterfaceFunction.RetCount">
+            <summary>
+            Количество значений в стеке, которые возвращаются текущей 
+            интерфейсной функцией.
+            </summary>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.#ctor(MntCuda.HardGeometry.InterfaceFunction)">
+            <summary>
+            Копирующий конструктор интерфейсной функции.
+            </summary>
+            <param name="inter">Копируемая интерфейсная функция.</param>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.Pack">
+            <summary>
+            Преобразовать однонаправленный список, хранящийся в текущей 
+            интерфейсной функции в массив (последовательность) интерфейсных 
+            функций, обратив порядок в этом списке.
+            </summary>
+            <returns>Массив (последовательность) интерфейсных функций для 
+                дальнейшего преобразования в байт-коды операций.</returns>
+        </member>
+        <member name="P:MntCuda.HardGeometry.InterfaceFunction.ParsCount">
+            <summary>
+            Количество формальных параметров операции текущей интерфейсной функции.
+            </summary>
+        </member>
+        <member name="T:MntCuda.HardGeometry.InterfaceFunction.BinOperation">
+            <summary>Список доп. кодов бинарных операций.</summary>
+        </member>
+        <member name="P:MntCuda.HardGeometry.InterfaceFunction.IsNoOp">
+            <summary>
+            Флаг того, что интерфейсная функция является последней в списке (No Operation)
+            </summary>
+        </member>
+        <member name="P:MntCuda.HardGeometry.InterfaceFunction.F0">
+            <summary>
+            Тривиальная функция, которая не изменяет состояние нейтрона. 
+            Композиция любой функции с <c>F0</c> - это сама эта функция.
+            </summary>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.Push(System.Single)">
+            <summary>Поместить в стек число типа <see langword="float"/>.</summary>
+            <param name="val">Помещаемое в стек число.</param>
+            <returns>Интерфейсная функция, обеспечивающая помещение числа в стек.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.Push(MntCuda.HardGeometry.Register)">
+            <summary>Поместить в стек значение характеристики нейтрона <paramref name="reg"/>.</summary>
+            <param name="reg">Характеристика нейтрона, значение которой будет помещено в стек.</param>
+            <returns>Интерфейсная функция, обеспечивающая помещение значения характеристики нейтрона в стек.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.Pop">
+            <summary>Удалить из стека последний записанный в него элемент.</summary>
+            <returns>Интерфейсная функция, обеспечивающая удаление последнего записанного в стек элемента.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.Pop(MntCuda.HardGeometry.Register)">
+            <summary>
+            Удалить последний записанный в стек элемент и записать его 
+            значение в характеристику нейтрона <paramref name="reg"/>.
+            </summary>
+            <returns>Интерфейсная функция, обеспечивающая перемещение 
+                последнего записанного в стек элемента.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.Dup">
+            <summary>
+            Скопировать и поместить на верх стека (дублировать) последний записанный в него элемент.
+            </summary>
+            <returns>Интерфейсная функция, обеспечивающая дублирование головного элемента стека.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.Dup(System.UInt32)">
+            <summary>
+            Скопировать и поместить на верх стека (дублировать) элемент на глубине <paramref name="addr"/>.
+            </summary>
+            <param name="addr">Глубина, с которой будет скопирован элемент (0 - головной элемент).</param>
+            <returns>Интерфейсная функция, обеспечивающая дублирование заданного элемента стека.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.Set(MntCuda.HardGeometry.Register,MntCuda.HardGeometry.InterfaceFunction)">
+            <summary>
+            Записать в характеристику нейтрона <paramref name="dest"/> результат 
+            вычисления выражения <paramref name="expr"/>.
+            </summary>
+            <param name="dest">Характеристика нейтрона, в которую будет записан 
+                результат вычисления выражения.</param>
+            <param name="expr">Вычисляемое выражение.</param>
+            <returns>Интерфейсная функция, обеспечивающая вычисление выражения 
+                и сохранение результата в характеристику нейтрона.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.Add">
+            <summary>
+            Сложить два верхних (последних записанных) элемента стека и записать результат в стек.
+            </summary>
+            <returns>Интерфейсная функция, обеспечивающая сложение в стеке.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.Add(MntCuda.HardGeometry.InterfaceFunction,MntCuda.HardGeometry.InterfaceFunction)">
+            <summary>
+            Вычислить интерфейсные функции-операнды, поместив результаты в стек, 
+            и сложить результаты, поместив результат в стек.
+            </summary>
+            <param name="arg1">Первая интерфейсная функция-слагаемое.</param>
+            <param name="arg2">Вторая интерфейсная функция-слагаемое.</param>
+            <returns>Интерфейсная функция, обеспечивающая вычисление функций-операндов 
+                и сложение результатов.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.RAdd(MntCuda.HardGeometry.Register,System.Single)">
+            <summary>
+            Прибавить к значению характеристики <paramref name="dest"/> число 
+            <paramref name="val"/> и записать результат в эту же характеристику.
+            </summary>
+            <param name="dest">Характеристика нейтрона, значение которой будет изменено.</param>
+            <param name="val">Величина изменения.</param>
+            <returns>Интерфейсная функция, обеспечивающая изменение характеристики нейтрона.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.Mul">
+            <summary>
+            Умножить два верхних (последних записанных) элемента стека и записать результат в стек.
+            </summary>
+            <returns>Интерфейсная функция, обеспечивающая умножение в стеке.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.Mul(MntCuda.HardGeometry.InterfaceFunction,MntCuda.HardGeometry.InterfaceFunction)">
+            <summary>
+            Вычислить интерфейсные функции-операнды, поместив результаты в стек, 
+            и умножить результаты, поместив результат в стек.
+            </summary>
+            <param name="arg1">Первая интерфейсная функция-множитель.</param>
+            <param name="arg2">Вторая интерфейсная функция-множитель.</param>
+            <returns>Интерфейсная функция, обеспечивающая вычисление функций-операндов 
+                и умножение результатов.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.RMul(MntCuda.HardGeometry.Register,System.Single)">
+            <summary>
+            Умножить значение характеристики <paramref name="dest"/> на число 
+            <paramref name="val"/> и записать результат в эту же характеристику.
+            </summary>
+            <param name="dest">Характеристика нейтрона, значение которой будет изменено.</param>
+            <param name="val">Коэффициент изменения.</param>
+            <returns>Интерфейсная функция, обеспечивающая изменение характеристики нейтрона.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.Eq">
+            <summary>
+            Проверить равенство двух верхних (последних записанных) элементов 
+            стека и записать результат в стек: <c>1.0f</c>, если элементы равны, 
+            и <c>0.0f</c>, если не равны.
+            </summary>
+            <returns>Интерфейсная функция, обеспечивающая сравнение в стеке.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.Eq(MntCuda.HardGeometry.InterfaceFunction,MntCuda.HardGeometry.InterfaceFunction)">
+            <summary>
+            Вычислить интерфейсные функции-операнды, поместив результаты в стек, 
+            и проверить равенство результатов, поместив результат проверки в стек:
+            <c>1.0f</c>, если <c><paramref name="arg1"/> == <paramref name="arg2"/></c>, 
+            или <c>0.0f</c> в противном случае.
+            </summary>
+            <param name="arg1">Первая интерфейсная функция-операнд.</param>
+            <param name="arg2">Вторая интерфейсная функция-операнд.</param>
+            <returns>Интерфейсная функция, обеспечивающая вычисление функций-операндов 
+                и сравнение результатов.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.Neq">
+            <summary>
+            Проверить неравенство двух верхних (последних записанных) элементов 
+            стека и записать результат в стек: <c>1.0f</c>, если элементы не равны, 
+            и <c>0.0f</c>, если равны.
+            </summary>
+            <returns>Интерфейсная функция, обеспечивающая сравнение в стеке.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.Neq(MntCuda.HardGeometry.InterfaceFunction,MntCuda.HardGeometry.InterfaceFunction)">
+            <summary>
+            Вычислить интерфейсные функции-операнды, поместив результаты в стек, 
+            и проверить неравенство результатов, поместив результат проверки в стек:
+            <c>1.0f</c>, если <c><paramref name="arg1"/> != <paramref name="arg2"/></c>, 
+            или <c>0.0f</c> в противном случае.
+            </summary>
+            <param name="arg1">Первая интерфейсная функция-операнд.</param>
+            <param name="arg2">Вторая интерфейсная функция-операнд.</param>
+            <returns>Интерфейсная функция, обеспечивающая вычисление функций-операндов 
+                и сравнение результатов.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.Gt">
+            <summary>
+            Сравнить два верхних (последних записанных) элементов стека и 
+            записать результат в стек: <c>1.0f</c>, если элемент, следующий 
+            головным, больше головного элемента, и <c>0.0f</c> в противном случае.
+            </summary>
+            <returns>Интерфейсная функция, обеспечивающая сравнение в стеке.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.Gt(MntCuda.HardGeometry.InterfaceFunction,MntCuda.HardGeometry.InterfaceFunction)">
+            <summary>
+            Вычислить интерфейсные функции-операнды, поместив результаты в стек, 
+            и сравнить результаты, поместив результат в стек:
+            <c>1.0f</c>, если <c><paramref name="arg1"/> &gt; <paramref name="arg2"/></c>, 
+            или <c>0.0f</c> в противном случае.
+            </summary>
+            <param name="arg1">Первая интерфейсная функция-операнд.</param>
+            <param name="arg2">Вторая интерфейсная функция-операнд.</param>
+            <returns>Интерфейсная функция, обеспечивающая вычисление функций-операндов 
+                и сравнение результатов.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.Lt">
+            <summary>
+            Сравнить два верхних (последних записанных) элементов стека и 
+            записать результат в стек: <c>1.0f</c>, если элемент, следующий 
+            головным, меньше головного элемента, и <c>0.0f</c> в противном случае.
+            </summary>
+            <returns>Интерфейсная функция, обеспечивающая сравнение в стеке.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.Lt(MntCuda.HardGeometry.InterfaceFunction,MntCuda.HardGeometry.InterfaceFunction)">
+            <summary>
+            Вычислить интерфейсные функции-операнды, поместив результаты в стек, 
+            и сравнить результаты, поместив результат в стек:
+            <c>1.0f</c>, если <c><paramref name="arg1"/> &lt; <paramref name="arg2"/></c>, 
+            или <c>0.0f</c> в противном случае.
+            </summary>
+            <param name="arg1">Первая интерфейсная функция-операнд.</param>
+            <param name="arg2">Вторая интерфейсная функция-операнд.</param>
+            <returns>Интерфейсная функция, обеспечивающая вычисление функций-операндов 
+                и сравнение результатов.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.Ge">
+            <summary>
+            Сравнить два верхних (последних записанных) элементов стека и 
+            записать результат в стек: <c>1.0f</c>, если элемент, следующий 
+            головным, больше или равен головному элементу, и <c>0.0f</c> в 
+            противном случае.
+            </summary>
+            <returns>Интерфейсная функция, обеспечивающая сравнение в стеке.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.Ge(MntCuda.HardGeometry.InterfaceFunction,MntCuda.HardGeometry.InterfaceFunction)">
+            <summary>
+            Вычислить интерфейсные функции-операнды, поместив результаты в стек, 
+            и сравнить результаты, поместив результат в стек:
+            <c>1.0f</c>, если <c><paramref name="arg1"/> &gt;= <paramref name="arg2"/></c>, 
+            или <c>0.0f</c> в противном случае.
+            </summary>
+            <param name="arg1">Первая интерфейсная функция-операнд.</param>
+            <param name="arg2">Вторая интерфейсная функция-операнд.</param>
+            <returns>Интерфейсная функция, обеспечивающая вычисление функций-операндов 
+                и сравнение результатов.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.Le">
+            <summary>
+            Сравнить два верхних (последних записанных) элементов стека и 
+            записать результат в стек: <c>1.0f</c>, если элемент, следующий 
+            головным, меньше или равен головному элементу, и <c>0.0f</c> в 
+            противном случае.
+            </summary>
+            <returns>Интерфейсная функция, обеспечивающая сравнение в стеке.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.Le(MntCuda.HardGeometry.InterfaceFunction,MntCuda.HardGeometry.InterfaceFunction)">
+            <summary>
+            Вычислить интерфейсные функции-операнды, поместив результаты в стек, 
+            и сравнить результаты, поместив результат в стек:
+            <c>1.0f</c>, если <c><paramref name="arg1"/> &lt;= <paramref name="arg2"/></c>, 
+            или <c>0.0f</c> в противном случае.
+            </summary>
+            <param name="arg1">Первая интерфейсная функция-операнд.</param>
+            <param name="arg2">Вторая интерфейсная функция-операнд.</param>
+            <returns>Интерфейсная функция, обеспечивающая вычисление функций-операндов 
+                и сравнение результатов.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.If(MntCuda.HardGeometry.InterfaceFunction,MntCuda.HardGeometry.InterfaceFunction)">
+            <summary>
+            Выполнить интерфейсную функцию <paramref name="expr_true"/>, 
+            если истинно выражение <paramref name="condition"/>. 
+            Аналог: <c>if (condition) { expr_true; }</c>
+            </summary>
+            <param name="condition">Условие выполнения.</param>
+            <param name="expr_true">Выражение, выполняемое, если условие истинно.</param>
+            <returns>Интерфейсная функция, обеспечивающая условное выполнение функции.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.If(MntCuda.HardGeometry.InterfaceFunction,MntCuda.HardGeometry.InterfaceFunction,MntCuda.HardGeometry.InterfaceFunction)">
+            <summary>
+            Выполнить интерфейсную функцию <paramref name="expr_true"/>, 
+            если истинно выражение <paramref name="condition"/>, в противном 
+            случае выполнить <paramref name="expr_false"/>. 
+            Аналог: <c>if (condition) { expr_true; } else { expr_false; }</c>
+            </summary>
+            <param name="condition">Условие выполнения.</param>
+            <param name="expr_true">Выражение, выполняемое, если условие истинно.</param>
+            <param name="expr_false">Выражение, выполняемое, если условие ложно.</param>
+            <returns>Интерфейсная функция, обеспечивающая условное выполнение функций.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.Rand">
+            <summary>Поместить на верх стека случайное число.</summary>
+            <returns>Интерфейсная функция, помещающая в стек случайное число.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.Rand(MntCuda.HardGeometry.Register)">
+            <summary>Записать в заданную характеристику нейтрона случайное число.</summary>
+            <param name="dest">Разыгрываемая характеристика нейтрона.</param>
+            <returns>Интерфейсная функция, записывающая в характеристику нейтрона случайное число.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.SetZone(MntCuda.HardGeometry.Zone)">
+            <summary>
+            Поместить нейтрон в геометрическую зону <paramref name="z"/>: установить 
+            соответствующее значение характеристики <see cref="F:MntCuda.HardGeometry.Register.nphis"/>, не 
+            меняя значений остальных характеристик.
+            </summary>
+            <param name="z">Зона, в которую будет помещён нейтрон.</param>
+            <returns>Интерфейсная функция, помещающая нейтрон в заданную геометричесую зону.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.Composition(MntCuda.HardGeometry.InterfaceFunction,MntCuda.HardGeometry.InterfaceFunction)">
+            <summary>
+            Композиция функций: <paramref name="g"/>(<paramref name="f"/>(...)) - сначала 
+            выполняется <paramref name="f"/>, затем выполняется <paramref name="g"/>. 
+            </summary>
+            <param name="f">Функция, выполняемая первой.</param>
+            <param name="g">Функция, выполняемая второй.</param>
+            <returns>Интерфейсная функция, выполняющая сначала функцию <paramref name="f"/>, 
+                а затем функцию <paramref name="g"/>.</returns>
+            <remarks>
+            Все интерфейсные функции считаются принимающими состояние нейтрона 
+            и возвращающими состояние нейтрона. Поэтому композиция используется 
+            только для формирования последовательности выполнения интерфейсных 
+            функций. Для передачи значений в интерфейсные функции и сохранения 
+            результатов вычислений используются стек и регистры нейтрона.
+            </remarks>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.RotateXY(System.Single)">
+            <summary>
+            Повернуть нейтрон в полскости XY на угол <paramref name="angle"/>
+            </summary>
+            <param name="angle">Угол поворота в радианах</param>
+            <returns></returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.Reflect(System.Single,System.Single)">
+            <summary>
+            Отразить нейтрон от плоскости, параллельной оси <i>z</i> и параллельной 
+            единичному вектору <c>(<paramref name="ex"/>, <paramref name="ey"/>)</c>.
+            </summary>
+            <param name="ex"><i>x</i>-координата еденичного направляющего вектора.</param>
+            <param name="ey"><i>y</i>-координата еденичного направляющего вектора.</param>
+            <returns>Интерфейсная функция, отражающая нейтрон от заданной плоскости.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.SetRandomDirectionSphere">
+            <summary>
+            Разыграть три направляющих косинуса нейтрона (<see cref="F:MntCuda.HardGeometry.Register.wx"/>, 
+            <see cref="F:MntCuda.HardGeometry.Register.wy"/>, <see cref="F:MntCuda.HardGeometry.Register.wz"/>) из изотропного 
+            углового распределения.
+            </summary>
+            <returns>Интерфейсная функция, разыгрывающая направление полёта нейтрона 
+                из изотропного углового распределения.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.TraceToPoint(System.Int32,System.Single,System.Single)">
+            <summary>
+            Установить геометрическую зону (<see cref="F:MntCuda.HardGeometry.Register.nphis"/>) нейтрона, 
+            если известно, что точка <c>(<paramref name="x"/>, <paramref name="y"/>)</c> 
+            находится в интерфейсной зоне с идентификатором <paramref name="povid"/>.
+            </summary>
+            <param name="povid">Идентификатор интерфейсной зоны, в которой находится 
+                точка <c>(<paramref name="x"/>, <paramref name="y"/>)</c>.</param>
+            <param name="x"><i>x</i>-координата точки, для которой геометрическая зона известна.</param>
+            <param name="y"><i>y</i>-координата точки, для которой геометрическая зона известна.</param>
+            <returns>Интерфейсная функция, устанавливающая геометрическую зону нейтрона трассировкой 
+                из заданной точки по прямой в точку, где располагается нейтрон.</returns>
+            <exception cref="T:MntCuda.MntCudaException">Всегда, поскольку данная функция сейчас не поддерживается.</exception>
+            <inheritdoc cref="M:MntCuda.HardGeometry.InterfaceFunction.TraceToPoint(MntCuda.HardGeometry.Zone,System.Single,System.Single)" path="remarks"/>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.TraceToPoint(MntCuda.HardGeometry.Zone,System.Single,System.Single)">
+            <summary>
+            Установить геометрическую зону (<see cref="F:MntCuda.HardGeometry.Register.nphis"/>) нейтрона, 
+            если известно, что точка <c>(<paramref name="x"/>, <paramref name="y"/>)</c> 
+            находится в геометрической зоне <paramref name="z"/>.
+            </summary>
+            <param name="z">Геометрическая зона, в которой находится точка 
+                <c>(<paramref name="x"/>, <paramref name="y"/>)</c>.</param>
+            <param name="x"><i>x</i>-координата точки, для которой геометрическая зона известна.</param>
+            <param name="y"><i>y</i>-координата точки, для которой геометрическая зона известна.</param>
+            <returns>Интерфейсная функция, устанавливающая геометрическую зону нейтрона трассировкой 
+                из заданной точки по прямой в точку, где располагается нейтрон.</returns>
+            <remarks>
+            Задача вычисления индекса геометрической зоны решается методом трассировки. 
+            Не допускается, чтобы трассировочный нейтрон пересекал внешние поверхности 
+            геометрической ячейки или поверхности, которые ведут в интерфейсные функции, 
+            использующие TraceToPoint.
+            </remarks>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.SetDestID(System.Int32)">
+            <summary>
+            Поместить нейтрон в заданную интерфейсную зону.
+            </summary>
+            <param name="id">Идентификатор интерфейсной зоны, в которую будет помещён нейтрон.</param>
+            <returns>Интерфейсная функция, помещающая нейтрон в заданную интерфейсную зону.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.NeutronOut">
+            <summary>
+            Уничтожить нейтрон (поглотить на "чёрной" границе), в результате 
+            чего нейтрон будет считаться вылетевшим из системы.
+            </summary>
+            <returns>Интерфейсная функция, удаляющая нейтрон из системы.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.ProbabilityBinaryTree(System.Collections.Generic.IEnumerable{System.ValueTuple{System.Single,MntCuda.HardGeometry.InterfaceFunction}})">
+            <summary>
+            Выбрать интерфейсную функцию из заданного списка случайным образом в 
+            соответствии с заданным распределением вероятностей и выполнить её.
+            </summary>
+            <param name="func_list">Список пар (<i>вероятность выполнения</i>, 
+                <i>интерфейсная функция, выполняемая с заданной вероятностью</i>).</param>
+            <returns>Интерфейсная функция, случайно выбирающая и выполняющая одну 
+                интерфейсную функцию из списка.</returns>
+            <remarks>Реализовано с помощью дерева поиска.</remarks>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.Probability(System.ValueTuple{System.Single,MntCuda.HardGeometry.InterfaceFunction}[])">
+            <inheritdoc cref="M:MntCuda.HardGeometry.InterfaceFunction.ProbabilityBinaryTree(System.Collections.Generic.IEnumerable{System.ValueTuple{System.Single,MntCuda.HardGeometry.InterfaceFunction}})" path="summary|returns|param"/>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.Probability(System.Collections.Generic.IEnumerable{System.ValueTuple{System.Single,MntCuda.HardGeometry.InterfaceFunction}})">
+            <inheritdoc cref="M:MntCuda.HardGeometry.InterfaceFunction.ProbabilityBinaryTree(System.Collections.Generic.IEnumerable{System.ValueTuple{System.Single,MntCuda.HardGeometry.InterfaceFunction}})" path="summary|returns|param"/>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.op_Implicit(System.Single)~MntCuda.HardGeometry.InterfaceFunction">
+            <summary>
+            Приведение числа типа <see langword="float"/> к типу <see cref="T:MntCuda.HardGeometry.InterfaceFunction"/> 
+            (включая неявное, например, при конструировании интерфейсных функций) приводит к 
+            помещению этого числа в стек.
+            </summary>
+            <param name="val">Приводимое число.</param>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.op_Implicit(MntCuda.HardGeometry.Register)~MntCuda.HardGeometry.InterfaceFunction">
+            <summary>
+            Приведение названия характеристики нейтрона типа <see cref="T:MntCuda.HardGeometry.Register"/> к типу 
+            <see cref="T:MntCuda.HardGeometry.InterfaceFunction"/> (включая неявное, например, при конструировании 
+            интерфейсных функций) приводит к помещению значения этой характеристики нейтрона 
+            в стек.
+            </summary>
+            <param name="reg">Название характеристики нейтрона.</param>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.op_Addition(MntCuda.HardGeometry.InterfaceFunction,MntCuda.HardGeometry.InterfaceFunction)">
+            <inheritdoc cref="M:MntCuda.HardGeometry.InterfaceFunction.Add(MntCuda.HardGeometry.InterfaceFunction,MntCuda.HardGeometry.InterfaceFunction)"/>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.op_Multiply(MntCuda.HardGeometry.InterfaceFunction,MntCuda.HardGeometry.InterfaceFunction)">
+            <inheritdoc cref="M:MntCuda.HardGeometry.InterfaceFunction.Mul(MntCuda.HardGeometry.InterfaceFunction,MntCuda.HardGeometry.InterfaceFunction)"/>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.op_GreaterThan(MntCuda.HardGeometry.InterfaceFunction,MntCuda.HardGeometry.InterfaceFunction)">
+            <inheritdoc cref="M:MntCuda.HardGeometry.InterfaceFunction.Gt(MntCuda.HardGeometry.InterfaceFunction,MntCuda.HardGeometry.InterfaceFunction)"/>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.op_LessThan(MntCuda.HardGeometry.InterfaceFunction,MntCuda.HardGeometry.InterfaceFunction)">
+            <inheritdoc cref="M:MntCuda.HardGeometry.InterfaceFunction.Lt(MntCuda.HardGeometry.InterfaceFunction,MntCuda.HardGeometry.InterfaceFunction)"/>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.op_GreaterThanOrEqual(MntCuda.HardGeometry.InterfaceFunction,MntCuda.HardGeometry.InterfaceFunction)">
+            <inheritdoc cref="M:MntCuda.HardGeometry.InterfaceFunction.Ge(MntCuda.HardGeometry.InterfaceFunction,MntCuda.HardGeometry.InterfaceFunction)"/>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.op_LessThanOrEqual(MntCuda.HardGeometry.InterfaceFunction,MntCuda.HardGeometry.InterfaceFunction)">
+            <inheritdoc cref="M:MntCuda.HardGeometry.InterfaceFunction.Le(MntCuda.HardGeometry.InterfaceFunction,MntCuda.HardGeometry.InterfaceFunction)"/>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.op_BitwiseAnd(MntCuda.HardGeometry.InterfaceFunction,MntCuda.HardGeometry.InterfaceFunction)">
+            <inheritdoc cref="M:MntCuda.HardGeometry.InterfaceFunction.Composition(MntCuda.HardGeometry.InterfaceFunction,MntCuda.HardGeometry.InterfaceFunction)"/>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.op_Equality(MntCuda.HardGeometry.InterfaceFunction,MntCuda.HardGeometry.InterfaceFunction)">
+            <inheritdoc cref="M:MntCuda.HardGeometry.InterfaceFunction.Eq(MntCuda.HardGeometry.InterfaceFunction,MntCuda.HardGeometry.InterfaceFunction)"/>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceFunction.op_Inequality(MntCuda.HardGeometry.InterfaceFunction,MntCuda.HardGeometry.InterfaceFunction)">
+            <inheritdoc cref="M:MntCuda.HardGeometry.InterfaceFunction.Neq(MntCuda.HardGeometry.InterfaceFunction,MntCuda.HardGeometry.InterfaceFunction)"/>
+        </member>
+        <member name="T:MntCuda.HardGeometry.InterfaceObject">
+            <summary>
+            Интерфейс ноды с ячейкой - класс-коллекция интерфейсных функций, реализующих 
+            граничные условия для токов, направленных из ячейки в данной ноде.
+            </summary>
+            <remarks>
+            Интерфейсный обьект привязывается не к ячейке а к мультииндексу ноды. Поэтому 
+            допустимо, чтобы разные ячейки имели одинаковый интерфейс (например, 
+            прямоугольные ячейки реактора РБМК-1000).
+            </remarks>
+        </member>
+        <member name="P:MntCuda.HardGeometry.InterfaceObject.Count">
+            <summary>
+            Количество интерфейсных зон.
+            </summary>
+        </member>
+        <member name="P:MntCuda.HardGeometry.InterfaceObject.Item(System.Int32)">
+            <summary>
+            Индексатор коллекции по индексу интерфейсной зоны.
+            </summary>
+            <param name="pov_nom">Индекс интерфейсной зоны.</param>
+            <returns>Интерфейсная функция, вызываемая при попадании нейтрона в
+                интерфейсную зону с индексом <paramref name="pov_nom"/> из ячейки.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceObject.#ctor(System.Int32)">
+            <summary>
+            Инициализировать интерфейс ячейки с заданным количеством интерфейсных зон.
+            </summary>
+            <param name="pov_count">Количество интерфейсных зон.</param>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceObject.GetEnumerator">
+            <summary>
+            Генератор последовательности (перечислитель) интерфейсных функций для 
+            организации перебора в циклах <see langword="foreach"/>.
+            </summary>
+            <returns>Текущая интерфейсная функция.</returns>
+        </member>
+        <member name="T:MntCuda.HardGeometry.InterfaceZones">
+            <summary>
+            Класс-коллекция интерфейсных зон ячейки, создаваемая при инициализации ячейки 
+            и имеющая фиксированный размер.
+            </summary>
+        </member>
+        <member name="P:MntCuda.HardGeometry.InterfaceZones.Item(System.Int32)">
+            <summary>
+            Индексатор коллекции интерфейсных зон по идентификатору.
+            </summary>
+            <param name="nom">Идентификатор интерфейсный зоны.</param>
+            <returns>Интерфейсная зона с заданным идентификатором.</returns>
+        </member>
+        <member name="P:MntCuda.HardGeometry.InterfaceZones.Count">
+            <summary>
+            Количество интерфейсных зон в коллекции.
+            </summary>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceZones.InterfaceFunctions">
+            <summary>
+            Генератор последовательности (перечислитель) всех имеющихся в коллекции 
+            интерфейсных функций, в которые могут вести ориентированные поверхности, 
+            для организации их перебора в циклах <see langword="foreach"/>. 
+            </summary>
+            <returns>Текущая интерфейсная функция.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceZones.Contains(MntCuda.HardGeometry.ZoneGraphNode)">
+            <summary>
+            Проверить, имеется ли в коллекции указанная интерфейсная зона.
+            </summary>
+            <param name="z">Интерфейсная зона, наличие которой необходимо проверить.</param>
+            <returns>Результат проверки.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceZones.#ctor(System.Int32)">
+            <summary>
+            Инициализировать экземпляр класса <see cref="T:MntCuda.HardGeometry.InterfaceZones"/>, содержащий 
+            <paramref name="count"/> интерфейсных зон, и инициализировать каждую из них.
+            </summary>
+            <param name="count">Количество интерфейсных зон.</param>
+        </member>
+        <member name="M:MntCuda.HardGeometry.InterfaceZones.GetEnumerator">
+            <summary>
+            Генератор последовательности (перечислитель) интерфейсных зон ячейки для 
+            организации перебора в циклах <see langword="foreach"/>. 
+            </summary>
+            <returns>Текущая интерфейсная зона.</returns>
+        </member>
+        <member name="T:MntCuda.HardGeometry.InterfaceZone">
+            <summary>
+            Класс интерфейсной зоны.
+            </summary>
+        </member>
+        <member name="P:MntCuda.HardGeometry.InterfaceZone.Surface">
+            <summary>
+            Ориентированная поверхность, которая выходит из данной интерфейсной зоны и может 
+            вести либо в единственную соседнюю геометрическую зону, либо в интерфейсную 
+            функцию, идентифицирующую нужную геометрическую зону, если их несколько. 
+            </summary>
+        </member>
+        <member name="P:MntCuda.HardGeometry.InterfaceZone.ID">
+            <summary>
+            Идентификатор интерфейсной зоны.
+            </summary>
+        </member>
+        <member name="T:MntCuda.HardGeometry.BaseGeometrySurface">
+            <summary>
+            Базовый абстрактный класс геометрической ориентированной поверхности 
+            с заданной нормалью.
+            </summary>
+        </member>
+        <member name="M:MntCuda.HardGeometry.BaseGeometrySurface.GetLen(System.Double,System.Double,System.Double,System.Double)">
+            <summary>
+            Вычислить расстояние от точки <c>r = (<paramref name="x"/>, <paramref name="y"/>)</c>
+            до пересечения луча, исходящего из этой точки в направлении <b>единичного</b> 
+            вектора <c>w = (<paramref name="wx"/>, <paramref name="wy"/>)</c>, с данной поверхностью. 
+            </summary>
+            <param name="x"><i>x</i>-координата начала отсчёта расстояния <c>r</c>.</param>
+            <param name="y"><i>y</i>-координата начала отсчёта расстояния <c>r</c>.</param>
+            <param name="wx"><i>x</i>-координата направляющего вектора <c>w</c>.</param>
+            <param name="wy"><i>y</i>-координата направляющего вектора <c>w</c>.</param>
+            <returns>Вычисленное расстояние, если луч пересекается с поверхностью. 
+                <c>1e+30f</c>, если луч не пересекается с поверхностью.</returns>
+            <remarks>
+            Пересечение засчитывается только тогда, когда скалярное произведение нормали 
+            <c>n</c> к поверхности в точке пересечения и вектора <c>w</c> положительно: 
+            <c>(n,w) &gt; 0</c>. 
+            
+            Также предполагается, что точка <c>r</c> находится внутри области пространства, 
+            ограниченной данной поверхностью с нормалью, направленной из этой области, 
+            т.е. для данной точки существует какой-то вектор <c>w</c>, для которого 
+            <c>(n,w) &gt; 0</c>. 
+            
+            Если точка <c>r</c> находится вне области пространства, ограниченной данной 
+            поверхностью, но <c>(n,w) &gt; 0</c>, то возвращается <c>0</c>, чтобы 
+            скомпенсировать ошибку округления.
+            </remarks>
+        </member>
+        <member name="M:MntCuda.HardGeometry.BaseGeometrySurface.Contains(System.Single,System.Single)">
+            <summary>
+            Вычисляет принадлежит ли заданная точка области пространства ограниченной поверхностью.
+            </summary>
+            <param name="x"><i>x</i>-координата  точки.</param>
+            <param name="y"><i>y</i>-координата  точки.</param>
+            <returns><c>true</c> если точка лежит "внутри", иначе <c>false</c></returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.BaseGeometrySurface.MoveCoordinates(System.Single,System.Single)">
+            <summary>
+            Параллельный перенос геометрической ориентированной поверхности.
+            </summary>
+            <param name="dx">Смещение вдоль оси <i>x</i>.</param>
+            <param name="dy">Смещение вдоль оси <i>y</i>.</param>
+        </member>
+        <member name="M:MntCuda.HardGeometry.BaseGeometrySurface.Inverse">
+            <summary>
+            Создать копию данной геометрической ориентированной поверхности с 
+            противоположно направленной нормалью.
+            </summary>
+            <returns>Геометрическая ориентированная поверхность, совпадающая с 
+                текущей, но имеющей противоположно направленную нормаль.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.BaseGeometrySurface.#ctor(System.Int32)">
+            <summary>
+            Инициализировать геометрическую ориентированную поверхность.
+            </summary>
+            <param name="id">Тип геометрии: 
+                1) <see cref="T:MntCuda.HardGeometry.PlaneOzSurface">плоскость, параллельная оси <i>z</i></see>;
+                2) <see cref="T:MntCuda.HardGeometry.CylinderOzSurface">цилиндр, ось которого параллельна оси <i>z</i></see>;
+                3) <see cref="T:MntCuda.HardGeometry.ZConstPlaneSurface">плоскость, перпендикулярная оси <i>z</i></see>.</param>
+        </member>
+        <member name="T:MntCuda.HardGeometry.Surface">
+            <summary>
+            Класс ориентированной поверхности.
+            </summary>
+        </member>
+        <member name="P:MntCuda.HardGeometry.Surface.From">
+            <summary>
+            Геометрическая или интерфейсная зона, из которой направлена поверхность.
+            </summary>
+        </member>
+        <member name="P:MntCuda.HardGeometry.Surface.Destination">
+            <summary>
+            Геометрическая или интерфейсная зона, в которую направлена поверхность, 
+            если поверхность соединяет зоны. Интерфейсная функция, которая вызывается при пересечении односторонней 
+            поверхности, если поверхность соединяет зону и интерфейсную функцию.
+            </summary>
+        </member>
+        <member name="P:MntCuda.HardGeometry.Surface.Geometry">
+            <summary>
+            Геометрическая ориентированная поверхность.
+            </summary>
+        </member>
+        <member name="P:MntCuda.HardGeometry.Surface.RegistrationZone">
+            <summary>
+            Индекс регистрационной зоны для регистрации тока через поверхность.
+            </summary>
+            <remarks>
+            Индексы регистрационных зон для регистрации токов через поверхности могут 
+            совпадать с целочисленными индексами физических зон в данной ноде, поскольку 
+            результаты регистрации токов через поверхности и объёмных функционалов 
+            сохраняются в разных массивах.
+            </remarks>
+        </member>
+        <member name="T:MntCuda.HardGeometry.PlaneOzSurface">
+            <summary>
+            Плоскость, параллельная оси <i>z</i>.
+            </summary>
+            <remarks>
+            Плоскость определяется двумя точками на плоскости <i>xy</i>, через которые 
+            она проходит. Пусть это точки <c>P₁</c> и <c>P₂</c>. 
+            Направление нормали <c>n</c> к плоскости определяется порядком точек: 
+            векторное произведение <c>[P₁P₂ x n]</c> сонаправлено с осью <i>z</i>.
+            </remarks>
+        </member>
+        <member name="P:MntCuda.HardGeometry.PlaneOzSurface.X1">
+            <summary><i>x</i>-координата первой точки, через которую проходит плоскость.</summary>
+        </member>
+        <member name="P:MntCuda.HardGeometry.PlaneOzSurface.Y1">
+            <summary><i>y</i>-координата первой точки, через которую проходит плоскость.</summary>
+        </member>
+        <member name="P:MntCuda.HardGeometry.PlaneOzSurface.X2">
+            <summary><i>x</i>-координата второй точки, через которую проходит плоскость.</summary>
+        </member>
+        <member name="P:MntCuda.HardGeometry.PlaneOzSurface.Y2">
+            <summary><i>y</i>-координата второй точки, через которую проходит плоскость.</summary>
+        </member>
+        <member name="M:MntCuda.HardGeometry.PlaneOzSurface.#ctor(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Инициализировать новую плоскость, параллельную оси <i>z</i>, по координатам точек на 
+            плоскости <i>xy</i>, через которые она проходит.
+            </summary>
+            <param name="x1"><i>x</i>-координата первой точки, через которую проходит плоскость.</param>
+            <param name="y1"><i>y</i>-координата первой точки, через которую проходит плоскость.</param>
+            <param name="x2"><i>x</i>-координата второй точки, через которую проходит плоскость.</param>
+            <param name="y2"><i>y</i>-координата второй точки, через которую проходит плоскость.</param>
+        </member>
+        <member name="M:MntCuda.HardGeometry.PlaneOzSurface.GetLen(System.Double,System.Double,System.Double,System.Double)">
+            <inheritdoc cref="M:MntCuda.HardGeometry.BaseGeometrySurface.GetLen(System.Double,System.Double,System.Double,System.Double)"/>
+        </member>
+        <member name="M:MntCuda.HardGeometry.PlaneOzSurface.Contains(System.Single,System.Single)">
+            <inheritdoc cref="M:MntCuda.HardGeometry.BaseGeometrySurface.Contains(System.Single,System.Single)"/>
+        </member>
+        <member name="M:MntCuda.HardGeometry.PlaneOzSurface.MoveCoordinates(System.Single,System.Single)">
+            <inheritdoc cref="M:MntCuda.HardGeometry.BaseGeometrySurface.MoveCoordinates(System.Single,System.Single)"/>
+        </member>
+        <member name="M:MntCuda.HardGeometry.PlaneOzSurface.Inverse">
+            <inheritdoc cref="M:MntCuda.HardGeometry.BaseGeometrySurface.Inverse"/>
+        </member>
+        <member name="T:MntCuda.HardGeometry.ZConstPlaneSurface">
+            <summary>
+            Плоскость, перпендикулярная оси <i>z</i>.
+            </summary>
+        </member>
+        <member name="P:MntCuda.HardGeometry.ZConstPlaneSurface.Z">
+            <summary><i>z</i>-координата точек на плоскости.</summary>
+        </member>
+        <member name="P:MntCuda.HardGeometry.ZConstPlaneSurface.N">
+            <summary><i>z</i>-компонента вектора нормали к плоскости.</summary>
+        </member>
+        <member name="M:MntCuda.HardGeometry.ZConstPlaneSurface.#ctor(System.Single,System.Single)">
+            <summary>
+            Инициализировать новую плоскость, перпендикулярную оси <i>z</i>.
+            </summary>
+            <param name="z"><i>z</i>-координата точек на плоскости.</param>
+            <param name="n"><i>z</i>-компонента вектора нормали к плоскости.</param>
+        </member>
+        <member name="M:MntCuda.HardGeometry.ZConstPlaneSurface.GetLen(System.Double,System.Double,System.Double,System.Double)">
+            <inheritdoc cref="M:MntCuda.HardGeometry.BaseGeometrySurface.GetLen(System.Double,System.Double,System.Double,System.Double)"/>
+            <returns>Всегда возвращает 0.</returns>
+            <remarks>Считается, что точка <c>r</c> уже находится на данной плоскости.</remarks>
+        </member>
+        <member name="M:MntCuda.HardGeometry.ZConstPlaneSurface.Contains(System.Single,System.Single)">
+            <inheritdoc cref="M:MntCuda.HardGeometry.BaseGeometrySurface.Contains(System.Single,System.Single)"/>
+        </member>
+        <member name="M:MntCuda.HardGeometry.ZConstPlaneSurface.MoveCoordinates(System.Single,System.Single)">
+            <inheritdoc cref="M:MntCuda.HardGeometry.BaseGeometrySurface.MoveCoordinates(System.Single,System.Single)"/>
+        </member>
+        <member name="M:MntCuda.HardGeometry.ZConstPlaneSurface.Inverse">
+            <inheritdoc cref="M:MntCuda.HardGeometry.BaseGeometrySurface.Inverse"/>
+        </member>
+        <member name="T:MntCuda.HardGeometry.CylinderOzSurface">
+            <summary>
+            Цилиндрическая поверхность, ось которой параллельна оси <i>z</i>.
+            </summary>
+        </member>
+        <member name="P:MntCuda.HardGeometry.CylinderOzSurface.Ox">
+            <summary>
+            <i>x</i>-координата точки на плоскости <i>xy</i>, 
+            через которую проходит ось цилиндра.
+            </summary>
+        </member>
+        <member name="P:MntCuda.HardGeometry.CylinderOzSurface.Oy">
+            <summary>
+            <i>y</i>-координата точки на плоскости <i>xy</i>, 
+            через которую проходит ось цилиндра.
+            </summary>
+        </member>
+        <member name="P:MntCuda.HardGeometry.CylinderOzSurface.R">
+            <summary>
+            Радиус цилиндрической поверхности.
+            </summary>
+        </member>
+        <member name="P:MntCuda.HardGeometry.CylinderOzSurface.IsOuterNormale">
+            <summary>
+            <see langword="true"/>, если нормаль направлена из центра наружу.
+            </summary>
+        </member>
+        <member name="M:MntCuda.HardGeometry.CylinderOzSurface.#ctor(System.Single,System.Single,System.Single,System.Boolean)">
+            <summary>
+            Инициализировать новую цилиндрическую поверхность, параллельную оси <i>z</i>.
+            </summary>
+            <param name="ox"><i>x</i>-координата точки на плоскости <i>xy</i>, 
+                через которую проходит ось цилиндра.</param>
+            <param name="oy"><i>y</i>-координата точки на плоскости <i>xy</i>, 
+                через которую проходит ось цилиндра.</param>
+            <param name="r">Радиус цилиндрической поверхности</param>
+            <param name="isOuterNormale"><see langword="true"/>, если нормаль направлена из центра наружу.</param>
+        </member>
+        <member name="M:MntCuda.HardGeometry.CylinderOzSurface.GetLen(System.Double,System.Double,System.Double,System.Double)">
+            <inheritdoc cref="M:MntCuda.HardGeometry.BaseGeometrySurface.GetLen(System.Double,System.Double,System.Double,System.Double)"/>
+        </member>
+        <member name="M:MntCuda.HardGeometry.CylinderOzSurface.Contains(System.Single,System.Single)">
+            <inheritdoc cref="M:MntCuda.HardGeometry.BaseGeometrySurface.Contains(System.Single,System.Single)"/>
+        </member>
+        <member name="M:MntCuda.HardGeometry.CylinderOzSurface.MoveCoordinates(System.Single,System.Single)">
+            <inheritdoc cref="M:MntCuda.HardGeometry.BaseGeometrySurface.MoveCoordinates(System.Single,System.Single)"/>
+        </member>
+        <member name="M:MntCuda.HardGeometry.CylinderOzSurface.Inverse">
+            <inheritdoc cref="M:MntCuda.HardGeometry.BaseGeometrySurface.Inverse"/>
+        </member>
+        <member name="T:MntCuda.HardGeometry.Zone">
+            <summary>
+            Класс геометрической зоны.
+            </summary>
+        </member>
+        <member name="P:MntCuda.HardGeometry.Zone.PhysicalZoneNumber">
+            <summary>
+            Целочисленный индекс физической зоны в ноде, в которую входит данная 
+            геометрическая зона.
+            </summary>
+        </member>
+        <member name="P:MntCuda.HardGeometry.Zone.Surfaces">
+            <summary>
+            Список ориентированных поверхностей, которые выходят из данной 
+            геометрической зоны (их нормали направлены из данной геометрической зоны).
+            </summary>
+        </member>
+        <member name="M:MntCuda.HardGeometry.Zone.GetSurfaces">
+            <summary>
+            Генератор последовательности (перечислитель) ориентированных поверхностей зоны для 
+            организации перебора в циклах<see langword="foreach"/>. 
+            </summary>
+            <returns>Текущая ориентированная поверхность.</returns>
+        </member>
+        <member name="M:MntCuda.HardGeometry.Zone.MoveCoordinates(System.Single,System.Single)">
+            <summary>
+            Параллельный перенос всех ориентированных поверхностей во всех зонах ячейки.
+            </summary>
+            <inheritdoc cref="M:MntCuda.HardGeometry.BaseGeometrySurface.MoveCoordinates(System.Single,System.Single)"/>
+        </member>
+        <member name="T:MntCuda.PoolArray">
+            <summary>
+            Класс - обертка над массивом, обеспечивающий безопасную работку с массивами из общего пула в куче.
+            </summary>
+            <remarks>
+            При создании, если это возможно, вместо выделения памяти под массив в куче обьекту выдается память выделенная ранее под массив из пула.
+            При уничтожении обьекта его внутренний массив автоматически возвращается в пул для возможности его повторного использвоания другим обьектом.
+            Эта особенность накладывает существенные ограничения на возможность доступа по указателю(ссылке) к внутреннему массиву обьекта, так как владение массивом может быть передано другому классу.
+            Как правило рекомендуется не работать с внутренним массивом напрямую, а производить его копирование или копирование в него. Однако, там где этого требует быстродействие
+            предусмотрена возможность получить указатель на масси небезопасными методами.
+            </remarks>
+        </member>
+        <member name="M:MntCuda.PoolArray.GetEnumerator">
+            <summary> Returns an enumerator that iterates through the collection. </summary>
+            <returns>An enumerator that can be used to iterate through the collection.</returns>
+        </member>
+        <member name="M:MntCuda.PoolArray.Finalize">
+            <summary>
+            Деструктор класса
+            </summary>
+        </member>
+        <member name="P:MntCuda.PoolArray.Item(System.Int32)">
+            <summary>
+            Возвращает элемент массива по индексу
+            </summary>
+            <param name="i">Индес в массиве</param>
+            <returns>Элемент массива</returns>
+        </member>
+        <member name="M:MntCuda.PoolArray.GetArray">
+            <summary>
+            Возвращает внутренний массив обьекта <see cref="T:MntCuda.PoolArray"/>.
+            </summary>
+            <remarks>При выполненнии этой операции массив становистя общим и не может быть возвращен в пул при уничтожении обьекта</remarks>
+            <returns>Массив данных</returns>
+        </member>
+        <member name="M:MntCuda.PoolArray.UnsafeGetArray">
+            <summary>
+            Возвращает небезопасный внутренний массив обьекта <see cref="T:MntCuda.PoolArray"/> сохраняя владение им за <see cref="T:MntCuda.PoolArray"/>.
+            </summary>
+            <remarks>
+            Используя этот метод важно отслеживать, чтобы время жизни ссылки на массив не превышало времени жизни <see cref="T:MntCuda.PoolArray"/>.
+            По окончанию жизни <see cref="T:MntCuda.PoolArray"/> массив будет возвращен в пул и может быть использован другим <see cref="T:MntCuda.PoolArray"/>, что может породить в памяти два обьекта с общей областью памяти.</remarks>
+            <returns>Массив данных</returns>
+        </member>
+        <member name="M:MntCuda.PoolArray.GetSpan">
+            <summary>
+            Возвращает содержимое внутреннего массива обьекта <see cref="T:MntCuda.PoolArray"/> в виде Span-а.
+            </summary>
+            <remarks>
+            Используя этот метод важно отслеживать, чтобы время жизни Span-а не превышало времени жизни <see cref="T:MntCuda.PoolArray"/>.
+            По окончанию жизни <see cref="T:MntCuda.PoolArray"/> массив будет возвращен в пул и может быть использован другим <see cref="T:MntCuda.PoolArray"/>, что может породить в памяти два обьекта с общей областью памяти.</remarks>
+            <returns></returns>
+        </member>
+        <member name="M:MntCuda.PoolArray.SetData(System.Single[])">
+            <summary>
+            Заменяет внутернний массив на аргумент <param name="data"></param>. При этом старый массив возвращается в пул обьектов.
+            </summary>
+            <remarks>Переданный массив не будет возвращен в пул обьектов после уничтожения <see cref="T:MntCuda.PoolArray"/> так как на него может существовать внешняя ссылка.</remarks>
+            <param name="data">Массив данных, подставляемый внутрь <see cref="T:MntCuda.PoolArray"/>.</param>
+        </member>
+        <member name="M:MntCuda.PoolArray.UnsafeSetData(System.Single[])">
+            <summary>
+            Небезопасная замена внутерннего массива на аргумент <param name="data"></param>. При этом старый массив возвращается в пул обьектов.
+            </summary>
+            <remarks>
+            Используя этот метод важно отслеживать, чтобы время жизни ссылки на переданный массив не превышало времени жизни <see cref="T:MntCuda.PoolArray"/>.
+            По окончанию жизни <see cref="T:MntCuda.PoolArray"/> массив будет возвращен в пул и может быть использован другим <see cref="T:MntCuda.PoolArray"/>, что может породить в памяти два обьекта с общей областью памяти.</remarks>
+            <param name="data">Массив данных, подставляемый внутрь <see cref="T:MntCuda.PoolArray"/>.</param>
+        </member>
+        <member name="M:MntCuda.PoolArray.UnsafeMakeOwner(MntCuda.PoolArray)">
+            <summary>
+            Передает владение массивом <param name="data"></param> переданного <see cref="T:MntCuda.PoolArray"/> настоящему <see cref="T:MntCuda.PoolArray"/>.
+            </summary>
+            <remarks>
+            В результате настоящей операции переданный <see cref="T:MntCuda.PoolArray"/> (<param name="data"></param>) лешается владения своим внутренним массивом и при его уничтожении массив не будет возвращен в пул.
+            В то же время <see cref="T:MntCuda.PoolArray"/>, для которого вызван метод, приобретает владение массивом и при его уничтожении массив будет возвращен в пулл.
+            Важно учитывать, что время жизни обьекта владеющиего массивом должно покрывать время жизни всех обьектов содержащих массив, но не владеющих им.
+            В противном случае возможна ситуация, когда окончанию жизни <see cref="T:MntCuda.PoolArray"/> массив будет возвращен в пул и может быть использован другим <see cref="T:MntCuda.PoolArray"/>, что может породить в памяти два обьекта с общей областью памяти.
+            В случае если переданный <see cref="T:MntCuda.PoolArray"/> (<param name="data"></param>) не владеет массивом, то и настоящий <see cref="T:MntCuda.PoolArray"/> не приобретет владение массивом.
+            </remarks>
+            <param name="data"><see cref="T:MntCuda.PoolArray"/> содержащий массив, владение которым передается.</param>
+        </member>
+        <member name="M:MntCuda.PoolArray.CopyFrom(System.Single[])">
+            <summary>
+            Копирует данные из <param name="data"></param> во внутренний массив.
+            </summary>
+            <param name="data">данные для копирования.</param>
+        </member>
+        <member name="M:MntCuda.PoolArray.CopyFrom(MntCuda.PoolArray)">
+            <summary>
+            Копирует данные из <param name="data"></param> во внутренний массив.
+            </summary>
+            <param name="data">данные для копирования.</param>
+        </member>
+        <member name="M:MntCuda.PoolArray.CopyFrom(System.Span{System.Single})">
+            <summary>
+            Копирует данные из <param name="data"></param> во внутренний массив.
+            </summary>
+            <param name="data">данные для копирования.</param>
+        </member>
+        <member name="M:MntCuda.PoolArray.Clear">
+            <summary>
+            Очищает содержимое массива.
+            </summary>
+        </member>
+        <member name="P:MntCuda.PoolArray.Length">
+            <summary>
+            Размер массива.
+            </summary>
+        </member>
+        <member name="T:MntCuda.ResultsData">
+            <summary>
+            Класс, содержащий набор результатов регистрации.
+            </summary>
+            <remarks>
+            <para>Первичные функционалы, которые могут быть зарегистрированы напрямую, либо 
+            выражены через результаты регистрации и сечения:</para>
+            <list type="number">
+            <listheader>
+              <term>Имя функционала</term><description>Описание</description>
+            </listheader>
+              <item>
+                <term><c>"FLUX"</c></term>
+                <description>Потоки нейтронов.</description>
+              </item><item>
+                <term><c>"R_ABS"</c></term>
+                <description>Скорость реакции поглощения (количества поглощений).</description>
+              </item><item>
+                <term><c>"R_SCAT"</c></term>
+                <description>Скорость реакции рассеяния (количества рассеяний). Имеет <c>Ng*Ng</c> групп. Сначала изменяется 
+                индекс группы, в которую попал нейтрон после рассеяния, затем - из которой.</description>
+              </item><item>
+                <term><c>"R_TOT"</c></term>
+                <description>Скорость реакции столкновения (количества столкновений) - сумма скоростей реакций поглощения и рассеяния.</description>
+              </item><item>
+                <term><c>"TokPov"</c></term>
+                <description>Односторонний ток через поверхность по направлению нормали к ней.</description>
+              </item><item>
+                <term><c>"TokPovOut"</c></term>
+                <description>Односторонний ток через поверхность против направления нормали к ней.</description>
+              </item><item>
+                <term><c>"SOURCE"</c></term>
+                <description>Скорость реакции рождения нейтронов (количества рождённых нейтронов).</description>
+              </item>
+            </list>
+            
+            <para>Вторичные функционалы, выражаемые из первичных функционалов и сечений:</para>
+            <list type="number">
+            <listheader>
+              <term>Имя функционала</term><description>Описание</description>
+            </listheader>
+              <item>
+                <term><c>"Q"</c></term>
+                <description>Суммарные по всем группам скорости генерации (количества вторичных нейтронов), рассчитанные из потоков <c>"FLUX"</c>.</description>
+              </item><item>
+                <term><c>"R_GEN"</c></term>
+                <description>Скорости генерации (количества вторичных нейтронов), рассчитанные из поглощений <c>"R_ABS"</c>.</description>
+              </item><item>
+                <term><c>"K0"</c></term>
+                <description>Отношение скорости генерации к скорости поглощения.</description>
+              </item>
+            </list>
+            
+            <para>
+            Все функционалы нормированы так, чтобы суммарный за все поколения источник нейтронов 
+            был равен единице. То есть все функционалы нормируются на один нейтрон источника - как 
+            будто бы был запущен только один нейтрон. Соответственно, сумма поглощённых и утекших 
+            нейтронов, если нет (n,2n) реакций, будет равна единице.
+            </para>
+            </remarks>
+        </member>
+        <member name="P:MntCuda.ResultsData.Grid">
+            <summary>Сетка индексации.</summary>
+        </member>
+        <member name="P:MntCuda.ResultsData.Keff">
+            <summary>
+            Эффективный коэффициент размножения - отношение числа нейтронов последующего 
+            поколения к числу нейтронов в предшествующем поколении во всём объеме среды.
+            </summary>
+            <remarks>
+            Оценивается только по итерациям, которые не пропускаются.
+            </remarks>
+        </member>
+        <member name="P:MntCuda.ResultsData.ErrKeff">
+            <summary>
+            Оценка ошибки эффективного коэффициента размножения. Среднеквадратичное отклонение 
+            (среднего) Keff по поколениям.
+            </summary>
+            <remarks>
+            <para>Поскольку итерации сильно скоррелированы, данная оценка ошибки будет заниженной.</para>
+            Оценивается только по итерациям, которые не пропускаются.
+            </remarks>
+        </member>
+        <member name="P:MntCuda.ResultsData.Leakage">
+            <summary>
+            Утечка нейтронов через чёрные границы системы.
+            </summary>
+        </member>
+        <member name="P:MntCuda.ResultsData.AvoidRate">
+            <summary>
+            Скорость реакции потери нейтронов.
+            </summary>
+            <remarks>
+            Если не ясно, что сделать с нейтроном (застрял в узле и т.д.), то предусмотена 
+            возможность разыграть реакцию потери нейтрона, в результате чего увеличится 
+            счётчик потерянных нейтронов.
+            </remarks>
+        </member>
+        <member name="F:MntCuda.ResultsData.Func">
+            <summary>
+            Ассоциативный массив, ставящий в соответствие именам регистрируемых функционалов 
+            результаты регистрации.
+            </summary>
+        </member>
+        <member name="P:MntCuda.ResultsData.CalculateTime">
+            <summary>
+            Время расчета задачи движком переноса нейтронов
+            </summary>
+        </member>
+        <member name="M:MntCuda.ResultsData.ContainsKey(System.String)">
+            <summary>
+            Проверяет, содержится ли функционал с именем <paramref name="name"/> в коллекции.
+            </summary>
+            <param name="name">Имя функционала.</param>
+            <returns>Результат проверки на наличие.</returns>
+        </member>
+        <member name="P:MntCuda.ResultsData.Item(System.String)">
+            <summary>
+            Индексатор набора результатов регистрации по их имени.
+            </summary>
+            <param name="name">Имя регистрируемого функционала.</param>
+            <returns>Коллекция результатов регистрации.</returns>
+        </member>
+        <member name="P:MntCuda.ResultsData.ReadScat">
+            <summary>
+            Если <see langword="true"/>, то будут регистрироваться следующие функционалы: 
+            <c>"FLUX"</c>, <c>"R_ABS"</c>, <c>"R_SCAT"</c>, <c>"R_TOT"</c>, <c>"TokPov"</c>, 
+            <c>"TokPovOut"</c>, <c>"SOURCE"</c>, <c>"Q"</c>, <c>"K0"</c> и <c>"R_GEN"</c>.<br/>
+            Если <see langword="false"/>, то будут регистрироваться следующие функционалы: <c>"FLUX"</c>, 
+            <c>"R_ABS"</c>, <c>"R_TOT"</c>, <c>"Q"</c> и <c>"R_GEN"</c>.
+            </summary>
+        </member>
+        <member name="M:MntCuda.ResultsData.GetAddData(MntCuda.CrossData)">
+            <summary>
+            Вычислить вторичные функционалы в ассоциативном массиве <see cref="F:MntCuda.ResultsData.Func"/>.
+            </summary>
+            <param name="cross">Данные о групповых сечениях нейтронов.</param>
+        </member>
+        <member name="M:MntCuda.ResultsData.GenEmptyData">
+            <summary>
+            Заполнить ассоциативный массив <see cref="F:MntCuda.ResultsData.Func"/> пустыми функционалами.
+            </summary>
+        </member>
+        <member name="M:MntCuda.ResultsData.Svert(MntCuda.Grid,System.Func{MntCuda.ZoneIndex,MntCuda.ZoneIndex},System.Func{MntCuda.ZoneIndex,System.Int32,System.Int32})">
+            <summary>
+            Получить результаты регистрации на новой сетке индексации как результат 
+            суммирования (распараллеленно) результатов регистрации на текущей сетке.
+            Супирование осуществляется для следующего перечня функционалов: Q, R_TOT, R_ABS, R_GEN, R_SCAT, SOURCE, FLUX.
+            Новый <see cref="T:MntCuda.ResultsData"/> не будет содержать результатов регистрации токов 
+            </summary>
+            <param name="new_grid">Новая сетка индексации.</param>
+            <param name="rule_zone">Отображение индекса зоны исходной сетки в индекс зоны новой сетки.</param>
+            <param name="rule_group">Отображение индексов зоны и группы исходной сетки в индекс 
+                группы новой сетки. Если группе с индексом <c>g</c> соответствует отрицательный 
+                индекс группы, то группа <c>g</c> не участвует в суммировании.</param>
+            <returns>Результаты регистрации на новой сетке.</returns>
+        </member>
+        <member name="M:MntCuda.ResultsData.#ctor(MntCuda.Grid,System.Boolean)">
+            <summary>
+            Инициализировать новый экземпляр класса <see cref="T:MntCuda.ResultsData"/>.
+            </summary>
+            <param name="grid">Сетка индексации.</param>
+            <param name="containsScat">Если <see langword="true"/>, то будут регистрироваться следующие функционалы: 
+                <c>"FLUX"</c>, <c>"R_ABS"</c>, <c>"R_SCAT"</c>, <c>"R_TOT"</c>, <c>"TokPov"</c>, 
+                <c>"TokPovOut"</c>, <c>"SOURCE"</c>, <c>"Q"</c>, <c>"K0"</c> и <c>"R_GEN"</c>.<br/>
+                Если <see langword="false"/>, то будут регистрироваться следующие функционалы: <c>"FLUX"</c>, 
+                <c>"R_ABS"</c>, <c>"R_TOT"</c>, <c>"Q"</c> и <c>"R_GEN"</c>.</param>
+        </member>
+        <member name="T:MntCuda.ScatteringMatrix">
+            <summary>
+            Матрица сечений межгрупповых переходов при рассеянии.
+            </summary>
+            <remarks>
+            Также данный класс используется в <see cref="T:MntCuda.CrossSectionElement"/> для хранения 
+            матрицы средних косинусов угла рассеяния.
+            </remarks>
+        </member>
+        <member name="P:MntCuda.ScatteringMatrix.Ng">
+            <summary>
+            Число энергетических групп
+            </summary>
+        </member>
+        <member name="M:MntCuda.ScatteringMatrix.GetTotalScattering(System.Int32)">
+            <summary>
+            Получить полное сечение рассеяния нейтрона с данной группой.
+            </summary>
+            <param name="ng">Индекс группы нейтрона.</param>
+            <returns>Полное сечение рассеяния нейтрона с данной группой.</returns>
+            <remarks>
+            Полное сечение рассеяния нейтрона с данной группой <c>ng</c> равно сумме 
+            элементов матрицы сечений межгрупповых переходов при рассеянии с фиксированным 
+            индексом группы нейтрона до рассеяния равным <c>ng</c>.
+            </remarks>
+        </member>
+        <member name="P:MntCuda.ScatteringMatrix.Item(System.Int32,System.Int32)">
+            <summary>
+            Индексатор матрицы по индексам групп до и после рассеяния (<c>i -> j</c>).
+            </summary>
+            <param name="i"><i>"Откуда"</i> - группа до рассеяния.</param>
+            <param name="j"><i>"Куда"</i> - группа после рассеяния.</param>
+            <returns></returns>
+        </member>
+        <member name="M:MntCuda.ScatteringMatrix.op_Multiply(System.Single,MntCuda.ScatteringMatrix)">
+            <summary>
+            Умножить поэлементно матрицу на число-коэффициент.
+            </summary>
+            <param name="a">Коэффициент.</param>
+            <param name="b">Матрица.</param>
+            <returns>Результат поэлементного умножения матрицы <c>b</c> на число <c>a</c>.</returns>
+        </member>
+        <member name="M:MntCuda.ScatteringMatrix.op_Addition(MntCuda.ScatteringMatrix,MntCuda.ScatteringMatrix)">
+            <summary>
+            Сложить поэлементно две матрицы.
+            </summary>
+            <param name="a">Первая матрица.</param>
+            <param name="b">Вторая матрица.</param>
+            <returns>Результат поэлементного сложения матриц <c>a</c> и <c>b</c>. 
+                Способ хранения элементов в результате совпадает со способом хранения 
+                элементов в матрице <c>a</c>.</returns>
+            <exception cref="T:MntCuda.MntCudaException">При сложении матриц с разным количеством групп.</exception>
+        </member>
+        <member name="M:MntCuda.ScatteringMatrix.Clone">
+            <summary>
+            Создать глубокую копию экземпляра класса <see cref="T:MntCuda.ScatteringMatrix"/>.
+            </summary>
+            <returns>Глубокая копия данного экземпляра класса.</returns>
+        </member>
+        <member name="M:MntCuda.ScatteringMatrix.#ctor(System.Int32,System.Boolean)">
+            <summary>
+            Инициализировать матрицу сечений межгрупповых переходов при рассеянии с 
+            заданным количеством групп.
+            </summary>
+            <param name="ng">Количество групп.</param>
+            /// <param name="isPacked">флаг указывающий на необходимость использования разряженых матриц.</param>
+            <remarks>
+            </remarks>
+        </member>
+        <member name="T:MntCuda.SimpleGeometrySystem">
+            <summary>
+            Геометрия квазигетерогенной системы.
+            </summary>
+            <remarks>
+            <i>Квазигетерогенной</i> называется система, состоящая из трёхмерной прямоугольной сетки 
+            одинаковых ячеек, каждая из которых представляет собой прямоугольный параллелепипед и 
+            граничит со своими соседями по сетке. 
+            В отличие от <see cref="T:MntCuda.HardGeometry.GeometrySystem">детальной геометрии</see> в 
+            каждой ячейке квазигетерогенной системы имеется только одна зона, то есть система 
+            представляется сеткой гомогенных нод.
+            </remarks>
+        </member>
+        <member name="P:MntCuda.SimpleGeometrySystem.Grid">
+            <summary>
+            Сетка индексации.
+            </summary>
+        </member>
+        <member name="P:MntCuda.SimpleGeometrySystem.D">
+            <summary>
+            Размеры каждой ячейки системы по трём осям [см].
+            </summary>
+        </member>
+        <member name="P:MntCuda.SimpleGeometrySystem.IsReflect">
+            <summary>
+            <see langword="true"/> - на внешних границах системы стоят условия отражения нейтрона. <br/>
+            <see langword="false"/> - условия поглощения (чёрные границы, пересекая которые нейтрон покидает систему).
+            </summary>
+        </member>
+        <member name="M:MntCuda.SimpleGeometrySystem.#ctor(MntCuda.Grid,System.Single[])">
+            <summary>
+            Инициализировать геометрию квазигетерогенной системы.
+            </summary>
+            <param name="grid">Сетка индексации.</param>
+            <param name="D">Размеры каждой ячейки системы по трём осям [см].</param>
+            <exception cref="T:MntCuda.MntCudaException">Если рамерность аргумента <c>D</c> отлична от 3.</exception>
+        </member>
+        <member name="T:MntCuda.BaseSource">
+            <summary>
+            Базовый класс для классов источников нейтронов.
+            </summary>
+        </member>
+        <member name="P:MntCuda.BaseSource.W">
+            <summary>
+            Вес источника нейтронов. 
+            </summary>
+            <remarks>
+            Вероятность рождения нейтрона в данной ноде p = <c>W</c> / (сумма <c>W</c> по всем нодам). 
+            В среднем, в данной ноде родится p * <see cref="P:MntCuda.TransportCalculator.PacketLength"/>.
+            </remarks>
+        </member>
+        <member name="T:MntCuda.SimpleSource">
+            <summary>
+            Источник нейтронов в ноде квазигетерогенной системы.
+            </summary>
+        </member>
+        <member name="P:MntCuda.SimpleSource.Group">
+            <summary>
+            Индекс группы рождаемых нейтронов.
+            </summary>
+        </member>
+        <member name="M:MntCuda.SimpleSource.#ctor(System.Single,System.Int32)">
+            <summary>
+            Инициализировать источник нейтронов в ноде квазигетерогенной системы.
+            </summary>
+            <param name="w">Вес источника нейтронов, пропорциональный вероятности рождения нейтрона 
+                в данной ноде.</param>
+            <param name="ng">Индекс группы рождаемых нейтронов.</param>
+            <inheritdoc cref="P:MntCuda.BaseSource.W"/>
+        </member>
+        <member name="T:MntCuda.Source">
+            <summary>
+            Источник нейтронов в ноде системы с детальной геометрией.
+            </summary>
+        </member>
+        <member name="P:MntCuda.Source.InterfaceFunction">
+            <summary>
+            Интерфейсная функция, применяемая к нейтронам источника сразу после их рождения. 
+            </summary>
+            <remarks>
+            Данная интерфейсная функция должна устанавливать: 
+            <list type="number">
+              <item><description>Координаты нейтрона.</description></item>
+              <item><description>Направляющие косинусы нейтрона.</description></item>
+              <item><description>Индекс группы нейтрона.</description></item>
+              <item>
+                <description>Положение нейтрона в системе зон с помощью функций 
+                    <see cref="M:MntCuda.HardGeometry.InterfaceFunction.SetZone(MntCuda.HardGeometry.Zone)"/>, 
+                    <see cref="M:MntCuda.HardGeometry.InterfaceFunction.SetDestID(System.Int32)"/> или
+                    <see cref="M:MntCuda.HardGeometry.InterfaceFunction.TraceToPoint(MntCuda.HardGeometry.Zone,System.Single,System.Single)"/>.
+                </description>
+              </item>
+            </list>
+            </remarks>
+        </member>
+        <member name="M:MntCuda.Source.#ctor(System.Single,MntCuda.HardGeometry.InterfaceFunction)">
+            <summary>
+            Инициализировать источник нейтронов в ноде системы с детальной геометрией.
+            </summary>
+            <param name="w">Вес источника нейтронов, пропорциональный вероятности рождения нейтрона 
+                в данной ноде.</param>
+            <param name="func">Интерфейсная функция, применяемая к нейтронам источника сразу после 
+                их рождения.</param>
+        </member>
+        <member name="T:MntCuda.SourceData`1">
+            <summary>
+            Базовый класс для индексируемых по нодам коллекций источников нейтронов в системах с детальной 
+            геометрией и квазигетерогенных системах.
+            </summary>
+            <typeparam name="T">Класс источника нейтронов.</typeparam>
+        </member>
+        <member name="M:MntCuda.SourceData`1.Renorm">
+            <summary>
+            Перенормировать веса источников в системе так, чтобы они были строго меньше 1.
+            </summary>
+        </member>
+        <member name="T:MntCuda.SimpleSourceData">
+            <summary>
+            Индексируемая по нодам коллекция источников нейтронов в квазигетерогенной системе. 
+            </summary>
+        </member>
+        <member name="M:MntCuda.SimpleSourceData.#ctor(MntCuda.Grid)">
+            <summary>
+            Инициализировать коллекцию источников нейтронов в квазигетерогенной системе.
+            </summary>
+            <param name="grid">Сетка индексации.</param>
+        </member>
+        <member name="T:MntCuda.SourceData">
+            <summary>
+            Индексируемая по нодам коллекция источников нейтронов в системе с детальной геометрией. 
+            </summary>
+        </member>
+        <member name="M:MntCuda.SourceData.#ctor(MntCuda.Grid)">
+            <summary>
+            Инициализировать коллекцию источников нейтронов в системе с детальной геометрией.
+            </summary>
+            <param name="grid">Сетка индексации.</param>
+        </member>
+        <member name="T:MntCuda.TransportCalculator">
+            <summary>
+            Класс, предназначенный для решения уравнения переноса с помощью внешнего нейтронного движка.
+            </summary>
+            <remarks>
+            Свойства класса определяют параметры расчёта.
+            
+            Методы класса осуществляют упаковку исходных данных, их передачу во внешний нейтронный движок, 
+            запуск расчёта, получение результатов регистрации из нейтронного движка и их распаковку.
+            </remarks>
+        </member>
+        <member name="P:MntCuda.TransportCalculator.UseCUDA">
+            <summary>
+            <b>DEPRECATED</b> Используйте <see cref="P:MntCuda.TransportCalculator.CalculatorLibName"/> для выбора 
+            нейтронного движка.
+            </summary>
+        </member>
+        <member name="P:MntCuda.TransportCalculator.CalculatorLibName">
+            <summary>
+            Имя исполняемого файла с нейтронным движком.
+            </summary>
+        </member>
+        <member name="P:MntCuda.TransportCalculator.RegisterCollision">
+            <summary>
+            <see langword="true"/>, если при расчёте следует регистрировать количества столкновений (сумма рассеяний и поглощений) [double, ед.]. <br/>
+            <see langword="false"/>, если количества столкновений следует оценить из пробегов или количеств поглощений.
+            </summary>
+        </member>
+        <member name="P:MntCuda.TransportCalculator.RegisterScattering">
+            <summary>
+            <see langword="true"/>, если при расчёте следует регистрировать количества рассеяний из каждой группы в каждую группу [double, ед.]. <br/>
+            <see langword="false"/>, если количества рассеяний следует оценить из пробегов или количеств поглощений.
+            </summary>
+        </member>
+        <member name="P:MntCuda.TransportCalculator.RegisterTrack">
+            <summary>
+            <see langword="true"/>, если при расчёте следует регистрировать пробеги [double, см]. <br/>
+            <see langword="false"/>, если пробеги следует оценить из количеств столкновений или поглощений.
+            </summary>
+        </member>
+        <member name="P:MntCuda.TransportCalculator.RegisterAbsorption">
+            <summary>
+            <see langword="true"/>, если при расчёте следует регистрировать количества поглощений [double, ед.]. <br/>
+            <see langword="false"/>, если количества поглощений следует оценить из пробегов или количеств поглощений.
+            </summary>
+        </member>
+        <member name="P:MntCuda.TransportCalculator.RegisterTok">
+            <summary>
+            <see langword="true"/>, если при расчёте следует регистрировать токи, втекающие в поверхности.
+            </summary>
+        </member>
+        <member name="P:MntCuda.TransportCalculator.RegisterTokOut">
+            <summary>
+            <see langword="true"/>, если при расчёте следует регистрировать токи, вытекающие из поверхностей.
+            </summary>
+        </member>
+        <member name="P:MntCuda.TransportCalculator.RegisterSource">
+            <summary>
+            <see langword="true"/>, если при расчёте следует регистрировать источники - количества актов рождения нейтронов.
+            </summary>
+        </member>
+        <member name="P:MntCuda.TransportCalculator.UseSourceFromFile">
+            <summary>
+            <see langword="true"/>, если при расчёте следует подменять банк нейтронов на источник нейтронов 
+            из файла <i>source.tmp</i> на каждой итерации.
+            </summary>
+            <remarks>
+            <para>Обычно источник нейтронов изменяется от итерации к итерации. Установка данного 
+            флага в <see langword="true"/> отключает это изменение: на каждой итерации источник загружается из 
+            файла <i>source.tmp</i> вместо того, чтобы разыгрывать источник нейтронов на основе 
+            нейтронов, поглощённых на предыдущей итерации.</para>
+            
+            <para>Данное свойство может использоваться для решения задачи расчёта малых поправок 
+            к сечениям деления, которые корректируют решение так, чтобы оно приблизилось к 
+            заданному, альтернативным способом к схеме с двойной итерацией. Таким образом, 
+            физический смысл имеет включение толко одного из флагов <c>UseSourceFromFile</c>
+            и <c>CorrFindTask</c>.</para>
+            </remarks>
+        </member>
+        <member name="P:MntCuda.TransportCalculator.CorrFindTask">
+            <summary>
+            <see langword="true"/>, если следует решать задачу расчёта поправок к сечениям, которые 
+            корректируют решение так, чтобы оно приблизилось к заданному.
+            </summary>
+            <remarks>
+            <para>Данный режим предназначен для нахождения малых поправок к сечениям деления для 
+            получения заданного решения с помощью схемы с двойной итерацией.</para>
+            
+            <para>Данный режим необходим, например, когда в решении физически большой исходной 
+            задачи получается глобальный макроперекос полей из-за неустойчивости первой гармоники. 
+            Тогда существует возможность скорректировать значения сечений генерации так, чтобы 
+            получить заданное решение. Например, при моделировании реактора РБМК-1000 для 
+            корректировки решения на ~30% обычно достаточно корректировки сечений в пределах ~1%.</para>
+            </remarks>
+        </member>
+        <member name="P:MntCuda.TransportCalculator.SourceTask">
+            <summary>
+            <see langword="true"/>, если следует решать задачу с источником. <br/>
+            <see langword="false"/>, если следует решать условно-критическую задачу.
+            </summary>
+        </member>
+        <member name="P:MntCuda.TransportCalculator.PacketLength">
+            <summary>
+            Размер пакета нейтронов. 
+            На каждой итерации разыгрывается ровно <c>PacketLength</c> историй нейтронов.
+            </summary>
+            <remarks>
+            <para>При решении условно-критической задачи на каждой итерации разыгрывается 
+            источник из <c>PacketLength</c> нейтронов с единичным весом каждый, распределение 
+            которого соответствует полученному банку нетронов, поглощённых на предыдущей 
+            итерации. <i>Банк нейтронов</i> - множество точек, где поглотились нейтроны, с 
+            весами равными количествам вторичных нейтронов на один акт поглощения.</para>
+            
+            <para>При решении задачи с источником на каждой итерации пакет нейтронов 
+            дополняется до <c>PacketLength</c> новыми нейтронами источника. Таким образом, 
+            параллельно моделируется поведение нейтронов разных поколений.</para>
+            </remarks>
+        </member>
+        <member name="P:MntCuda.TransportCalculator.Niterations">
+            <summary>
+            Количество итераций, на которых производится регистрация.
+            </summary>
+            <remarks>
+            Сначала производятся <c>Nskip_iterations</c> итераций без регистрации, затем 
+            <c>Niterations</c> с регистрацией.
+            </remarks>
+        </member>
+        <member name="P:MntCuda.TransportCalculator.Nskip_iterations">
+            <summary>
+            Количество итераций, на которых не производится регистрация.
+            </summary>
+            <inheritdoc cref="P:MntCuda.TransportCalculator.Niterations"/>
+        </member>
+        <member name="P:MntCuda.TransportCalculator.RegSummIterations">
+            <summary>
+            Каждую <c>RegSummIterations</c>-ю итерацию нейтронный движок добавляет результаты
+            регистрации из внутренних массивов одинарной точности к итоговым массивам двойной 
+            точности и обнуляет внутренние массивы одинарной точности.
+            </summary>
+            <remarks>
+            Регистрация ведётся нитями во внутренних массивах одинарной точности, обеспечивающих 
+            максимальную скорость и минимальное использование памяти. Для исключения потери 
+            точности данные из массивов одинарной точности необходимо периодически переносить в 
+            массивы двойной точности в основной памяти. Данное поле необходимо для того, чтобы 
+            иметь возможность минимизировать обращения к основной памяти.
+            </remarks>
+        </member>
+        <member name="P:MntCuda.TransportCalculator.SEED_ID">
+            <summary>
+            Идентификатор используемой последовательности случайных чисел. Изменение этого поля 
+            позволяет сбить последовательность случайных чисел. При расчёте в сетевом режиме 
+            <c>SEED_ID</c> автоматически выставляется различным для каждого расчётного клиента.
+            </summary>
+        </member>
+        <member name="P:MntCuda.TransportCalculator.GPU_ID">
+            <summary>
+            Номер используемой видеокарты в системе при расчёте на локальной машине. 
+            Значение -1, установленое по умолчанию, оставляет выбор GPU на усмотрение системы.
+            </summary>
+            <remarks>
+            Значение данного поля не передаётся от сервера к клиенту при работе в сетевом 
+            режиме. Оно устанавливается при запуске клиента на машине клиента.
+            </remarks>
+        </member>
+        <member name="P:MntCuda.TransportCalculator.CPUThreadsCount">
+            <summary>
+            Количество параллельно запускаемых нитей (используемых ядер) при расчете на CPU.
+            В случае если расчет проводится не нескольки нодах (<see cref="P:MntCuda.TransportCalculator.NetClientsCount"/> &gt; 1) это количество
+            нитей используется на каждой ноде.
+            </summary>
+        </member>
+        <member name="P:MntCuda.TransportCalculator.NetClientsCount">
+            <summary>
+            Количество задач, которое будет запущено в сетевом режиме, который запускается,
+            если <c>NetClientsCount</c> &gt; 1.
+            </summary>
+            <remarks>
+            <para>В сетевом режиме на машинах, на которых предполагается производить расчёты, 
+            должны быть запущены программы расчётного клиента, выполняющие метод 
+            <see cref="M:MntCuda.TransportCalculator.RunClientNetworkCalculation(System.String,System.Int32,System.Boolean)"/>. 
+            Расчётные клиенты постоянно пытаются установить соединение с расчётным сервером. 
+            Как только соединение устанавливается клиент получает от сервера исходные данные в 
+            сериализованном виде (параметры расчёта, геометрия, сечения), десериализует их, 
+            осуществляет расчёт, сериализует результаты и отправляет их на сервер. Далее клиент 
+            либо завершает работу, либо заново пытается установить соединение с сервером.</para>
+            
+            <para>Расчётный сервер при выполнении метода 
+            <see cref="M:MntCuda.TransportCalculator.Calculate(MntCuda.Grid,MntCuda.CrossData,MntCuda.SourceData,MntCuda.HardGeometry.GeometrySystem)"/> или 
+            <see cref="M:MntCuda.TransportCalculator.Calculate(MntCuda.Grid,MntCuda.CrossData,MntCuda.SimpleSourceData,MntCuda.SimpleGeometrySystem)"/> 
+            с установленным <c>NetClientsCount</c> &gt; 1 ждёт не более <c>NetClientsCount</c> 
+            соединений, сериализует и отправляет исходные данные по установленным соединениям, 
+            ожидает, получает и десериализует результаты, складывает их и делит на 
+            <c>NetClientsCount</c> (усредняет по клиентам). При этом процессы установки новых 
+            соединений и работы по уже установленным соединениям на сервере происходят параллельно.</para>
+            
+            <para>Таким образом, расчётный сервер запускает <c>NetClientsCount</c> расчётных задач, 
+            которые распределяются по клиентам. Если клиентов меньше, чем <c>NetClientsCount</c>, 
+            то один и тот же клиент выполнит несколько расчётных задач. Если клиентов больше, чем 
+            <c>NetClientsCount</c>, то некоторые клиенты останутся без расчётных задач.</para>
+            </remarks>
+        </member>
+        <member name="P:MntCuda.TransportCalculator.DebugMode">
+            <summary>
+            <see langword="true"/>, если нужно включить режим отладки. <br/>
+            <see langword="false"/>, если не нужно включать режим отладки.
+            </summary>
+            <remarks>
+            В режиме отладки разыгрывается история одного нейтрона, при этом происходящие с
+            этим нейтроном события выводятся в консоль.
+            </remarks>
+        </member>
+        <member name="P:MntCuda.TransportCalculator.IsNetworkDebugMode">
+            <summary>
+            Режим расчета на одном компьютере посредством запуска сетевого сервера и сетевого клиента в отдельных нитях.
+            </summary>
+        </member>
+        <member name="M:MntCuda.TransportCalculator.#ctor">
+            <summary>
+            Инициализировать новый пустой экземпляр класса <see cref="T:MntCuda.TransportCalculator"/>.
+            </summary>
+        </member>
+        <member name="M:MntCuda.TransportCalculator.RunClientNetworkCalculation(System.String,System.Int32,System.Boolean)">
+            <summary>
+            Запустить расчётного клиента, который попытается установить соединение с расчётным сервером,
+            получит от него исходные данные в сериализованном виде (параметры расчёта, геометрия, сечения),
+            десериализует их, осуществит расчёт, сериализует результаты и отправит их на сервер.
+            </summary>
+            <param name="address">IP-адрес расчётного сервера.</param>
+            <param name="gpu">Номер используемой клиентом видеокарты. Клиент работает только с одной 
+            видеокартой. Если в системе клиента более одной видеокарты, то для их использования 
+            необходимо запустить несколько клиентов.</param>
+            <param name="isOnce"><see langword="true"/>, если после выполнения расчёта клиент должен завершить работу.
+            <see langword="false"/>, если после выполнения расчёта клиент должен переподключится к серверу для 
+            выполнения последующих расчётов.</param>
+        </member>
+        <member name="M:MntCuda.TransportCalculator.Calculate(MntCuda.Grid,MntCuda.CrossData,MntCuda.SimpleSourceData,MntCuda.SimpleGeometrySystem)">
+            <summary>
+            Произвести расчёт в локальном или сетевом режиме (на стороне сервера).
+            </summary>
+            <param name="grid">Информация о сетке индексации.</param>
+            <param name="crossData">Информация о сечениях в системе.</param>
+            <param name="source">Информация об источниках в квазигетерогенной системе.</param>
+            <param name="geometry">Информация о геометрии квазигетерогенной системы.</param>
+            <returns>Результаты регистрации.</returns>
+        </member>
+        <member name="M:MntCuda.TransportCalculator.Calculate(MntCuda.Grid,MntCuda.CrossData,MntCuda.SourceData,MntCuda.HardGeometry.GeometrySystem)">
+            <summary>
+            Произвести расчёт в локальном или сетевом режиме (на стороне сервера).
+            </summary>
+            <param name="grid">Информация о сетке индексации.</param>
+            <param name="crossData">Информация о сечениях в системе.</param>
+            <param name="source">Информация об источниках в системе с детальной геометрией.</param>
+            <param name="geometry">Информация о геометрии системы с детальной геометрией.</param>
+            <returns>Результаты регистрации.</returns>
+        </member>
+        <member name="M:MntCuda.TransportCalculator.Clone">
+            <summary>
+            Создать глубокую копию экземпляра класса <see cref="T:MntCuda.TransportCalculator"/>.
+            </summary>
+            <returns>Глубокая копия данного экземпляра класса.</returns>
+        </member>
+        <member name="T:MntCuda.Utilites">
+            <summary>
+            Служебные функции ПК MNT-CUDA.
+            </summary>
+        </member>
+        <member name="P:MntCuda.Utilites.DatabasePath">
+            <summary>
+            Путь к директории с файловыми базами данных.
+            </summary>
+        </member>
+        <member name="M:MntCuda.Utilites.CheckAndCreatePath(System.String)">
+            <summary>
+            Проверить, существует ли директория, и создать её, если её не существует.
+            </summary>
+            <param name="path">Путь к файлу, директорию с которым необходимо проверить или создать.</param>
+        </member>
+        <member name="P:MntCuda.Utilites.DefaultParallelThreadsCount">
+            <summary>
+            Количество потоков (нитей) задействованых по умолчанию при использовании методов
+            <see cref="!:ParallelQueueFor(int, int, Action&lt;int&gt;, int)"/> и <see cref="M:MntCuda.Utilites.ParallelQueueForeach``1(System.Collections.Generic.IEnumerable{``0},System.Action{``0},System.Boolean,System.Int32)"/>
+            </summary>
+        </member>
+        <member name="P:MntCuda.Utilites._UseQuequeInParallelForeach">
+            <summary>
+            Флаг указывающий на то, нужно ли использовать в методе <see cref="M:MntCuda.Utilites.ParallelQueueForeach``1(System.Collections.Generic.IEnumerable{``0},System.Action{``0},System.Boolean,System.Int32)"/> очередь для обработки задач.
+            Если флаг равен <c>false</c>, то используется стандартный метод <c>Parallel.ForEach</c>.
+            </summary>
+        </member>
+        <member name="M:MntCuda.Utilites.ParallelQueueForeach``1(System.Collections.Generic.IEnumerable{``0},System.Action{``0},System.Boolean,System.Int32)">
+            <summary>
+            Распараллеленный цикл <c>foreach</c>.
+            </summary>
+            <typeparam name="TSource">Тип элементов коллекции.</typeparam>
+            <param name="source">Коллекция, по которой производится итерирование.</param>
+            <param name="threads_count">Количество потоков (нитей) выполнения. Если значение параметра равно -1, то число потоков принимается равным <see cref="P:MntCuda.Utilites.DefaultParallelThreadsCount"/></param>
+            <param name="body">Функция, применяемая к каждому элементу коллекции.</param>
+            <param name="printInfo"><c>True</c>, если необходимо в процессе выполнения выводить в 
+                консоль количество необработанных элементов коллекции.</param>
+        </member>
+        <member name="M:MntCuda.Utilites.ParallelFor(System.Int32,System.Int32,System.Action{System.Int32},System.Int32)">
+            <summary>
+            Распараллеленный цикл <c>for</c> реализованый стандартным методом <c>Parallel.For</c>.
+            </summary>
+            <param name="beg">Начальное значение индекса.</param>
+            <param name="end">Значение индекса, следующее сразу за конечным.</param>
+            <param name="threads_count">Количество потоков (нитей) выполнения. Если значение параметра равно -1, то число потоков принимается равным <see cref="P:MntCuda.Utilites.DefaultParallelThreadsCount"/></param>
+            <param name="body">Функция, применяемая к индексу.</param>
+        </member>
+        <member name="M:MntCuda.Utilites.ParallelQueueFor(System.Int32,System.Int32,System.Action{System.Int32},System.Boolean,System.Int32)">
+            <summary>
+            Распараллеленный цикл <c>for</c> реализованный через очередь задач.
+            </summary>
+            <param name="beg">Начальное значение индекса.</param>
+            <param name="end">Значение индекса, следующее сразу за конечным.</param>
+            <param name="threads_count">Количество потоков (нитей) выполнения. Если значение параметра равно -1, то число потоков принимается равным <see cref="P:MntCuda.Utilites.DefaultParallelThreadsCount"/></param>
+            <param name="body">Функция, применяемая к индексу.</param>
+        </member>
+        <member name="T:MntCuda.ZoneIndex">
+            <summary>
+            Четырёхмерный мультииндекс зоны (i, j, k, nz), где i, j, k - целочисленные индексы ноды, 
+            nz - целочисленный индекс зоны. <see cref="T:MntCuda.ZoneIndex"/> может использоваться для 
+            индексирования как физических, так и регистрационных зон.
+            </summary>
+            <inheritdoc cref="T:MntCuda.Grid"/>
+        </member>
+        <member name="F:MntCuda.ZoneIndex.i">
+            <summary>
+            i, j, k - целочисленные индексы ноды.
+            </summary>
+        </member>
+        <member name="F:MntCuda.ZoneIndex.j">
+            <summary>
+            i, j, k - целочисленные индексы ноды.
+            </summary>
+        </member>
+        <member name="F:MntCuda.ZoneIndex.k">
+            <summary>
+            i, j, k - целочисленные индексы ноды.
+            </summary>
+        </member>
+        <member name="F:MntCuda.ZoneIndex.nz">
+            <summary>
+            Целочисленный индекс зоны в ноде.
+            </summary>
+        </member>
+        <member name="P:MntCuda.ZoneIndex.Node">
+            <summary>
+            Мультииндекс ноды, в которой находится данная зона.
+            </summary>
+        </member>
+        <member name="M:MntCuda.ZoneIndex.#ctor(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Инициализирует новый мультииндекс зоны по целочисленным индексам ноды и индексу зоны в ноде.
+            </summary>
+            <param name="i">Целочисленный индекс ноды по первой координате.</param>
+            <param name="j">Целочисленный индекс ноды по второй координате.</param>
+            <param name="k">Целочисленный индекс ноды по третьей координате.</param>
+            <param name="nz">Целочисленный индекс зоны в ноде.</param>
+        </member>
+        <member name="M:MntCuda.ZoneIndex.#ctor(MntCuda.NodeIndex,System.Int32)">
+            <summary>
+            Инициализирует новый мультииндекс зоны по мультииндексу ноды и индексу зоны в ноде.
+            </summary>
+            <param name="node">Мультииндекс ноды, в которой находится данная зона.</param>
+            <param name="nz">Целочисленный индекс зоны в ноде.</param>
+        </member>
+        <member name="T:MntCuda.NodeIndex">
+            <summary>
+            Трёхмерный мультииндекс ноды: (i, j, k).
+            </summary>
+            <inheritdoc cref="T:MntCuda.Grid"/>
+        </member>
+        <member name="F:MntCuda.NodeIndex.i">
+            <summary>
+            i, j, k - целочисленные индексы ноды.
+            </summary>
+        </member>
+        <member name="F:MntCuda.NodeIndex.j">
+            <summary>
+            i, j, k - целочисленные индексы ноды.
+            </summary>
+        </member>
+        <member name="F:MntCuda.NodeIndex.k">
+            <summary>
+            i, j, k - целочисленные индексы ноды.
+            </summary>
+        </member>
+        <member name="M:MntCuda.NodeIndex.#ctor(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Инициализирует новый мультииндекс ноды по целочисленным индексам ноды.
+            </summary>
+            <param name="i">Целочисленный индекс ноды по первой координате.</param>
+            <param name="j">Целочисленный индекс ноды по второй координате.</param>
+            <param name="k">Целочисленный индекс ноды по третьей координате.</param>
+        </member>
+    </members>
+</doc>

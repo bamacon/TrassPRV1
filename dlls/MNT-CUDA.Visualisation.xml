@@ -1,0 +1,605 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MNT-CUDA.Visualisation</name>
+    </assembly>
+    <members>
+        <member name="T:MntCuda.Visualisation.OpenSCAD.OpenSCADExtensions">
+            <summary>
+            Методы расширения классов геометрических зоны, ячейки и системы, 
+            добавляющие возможность построения 3D-модели в формате OpenSCAD.
+            </summary>
+        </member>
+        <member name="M:MntCuda.Visualisation.OpenSCAD.OpenSCADExtensions.WriteToOpenSCADModelFile(MntCuda.HardGeometry.Zone,MntCuda.Visualisation.OpenSCAD.Vector3D,SixLabors.ImageSharp.Color,MntCuda.Visualisation.OpenSCAD.VisualizationSettings,System.String,System.String)">
+            <summary>
+            Записать в файл описание 3D-модели геометрической зоны в формате OpenSCAD.
+            </summary>
+            <param name="z">Геометрическая зона.</param>
+            <param name="translate">Положение начала системы координат геометрической 
+                зоны в глобальной системе координат.</param>
+            <param name="color">Цвет геометрической зоны при отображении.</param>
+            <param name="settings">Настройки визуализации.</param>
+            <param name="module_name">Имя модуля, строящего 3D-модель зоны.</param>
+            <param name="fname">Имя файла.</param>
+        </member>
+        <member name="M:MntCuda.Visualisation.OpenSCAD.OpenSCADExtensions.WriteToOpenSCADModelFile(MntCuda.HardGeometry.Cell,MntCuda.Visualisation.OpenSCAD.Vector3D,System.Func{System.Int32,SixLabors.ImageSharp.Color},MntCuda.Visualisation.OpenSCAD.VisualizationSettings,System.String,System.String)">
+            <summary>
+            Записать в файл описание 3D-модели геометрической ячейки в формате OpenSCAD.
+            </summary>
+            <param name="c">Геометрическая ячейка.</param>
+            <param name="translate">Положение начала системы координат геометрической 
+                ячейки в глобальной системе координат.</param>
+            <param name="zone_color">Функция, ставящая в соответствие целочисленному 
+                индексу физической зоны её цвет при отображении.</param>
+            <param name="settings">Настройки визуализации.</param>
+            <param name="module_name">Имя модуля, строящего 3D-модель ячейки.</param>
+            <param name="fname">Имя файла.</param>
+        </member>
+        <member name="M:MntCuda.Visualisation.OpenSCAD.OpenSCADExtensions.WriteToOpenSCADModelFile(MntCuda.HardGeometry.GeometrySystem,System.Func{MntCuda.NodeIndex,MntCuda.Visualisation.OpenSCAD.Vector3D},System.Func{MntCuda.ZoneIndex,SixLabors.ImageSharp.Color},MntCuda.Visualisation.OpenSCAD.VisualizationSettings,System.String,System.String)">
+            <summary>
+            Записать в файл описание 3D-модели геометрической системы в формате OpenSCAD.
+            </summary>
+            <param name="g">Геометрическая система.</param>
+            <param name="translate">Функция, ставящая в соответствие мультииндексу ноды 
+                положение начала системы координат находящейся в ней геометрической ячейки 
+                в глобальной системе координат.</param>
+            <param name="zone_color">Функция, ставящая в соответствие мультииндексу 
+                физической зоны её цвет при отображении.</param>
+            <param name="settings">Настройки визуализации.</param>
+            <param name="module_name">Имя модуля, строящего 3D-модель геометрической системы.</param>
+            <param name="fname">Имя файла.</param>
+            <example>
+            <code>
+            var grid = new Grid(new[] { 2, 1, 1 }, 100, 100);
+            var geo = new GeometrySystem(grid);
+            
+            var D = new float[] { 25, 25, 50 };
+            
+            geo.Cells[0, 0, 0] = new FuelCell();
+            geo.Cells[1, 0, 0] = new MultiCell(D, new KRO_IN(), new KRO_OUT(), 0.5f);
+            
+            var cross = new CrossData(grid);
+            var elements = new CrossSectionElement[4];
+            elements[0] = new CrossSectionElement(2);
+            elements[1] = new CrossSectionElement(4);
+            elements[2] = new CrossSectionElement(6);
+            elements[3] = new CrossSectionElement(8);
+            
+            foreach (var node in grid.Nodes())
+            {
+                if (geo[node].Cell is not null)
+                    for (int nz = 0; nz &lt;= geo[node].Cell.MaxMaterial; nz++)
+                        cross[node, nz] = elements[nz % elements.Length];
+            }
+            
+            var settings = new VisualizationSettings();
+            var cmap = new SelectedGlasbey26();
+            
+            geo.WriteToOpenSCADModelFile(
+                (node) => new Vector3D { x = node.i* D[0], y = node.j * D[1], z = node.k * D[2] },
+                Colorizers.QualitativeColorFromCollection(cross, cmap),
+                settings, "geo", "geo.scad");
+            </code>
+            </example>
+        </member>
+        <member name="T:MntCuda.Visualisation.OpenSCAD.Vector2D">
+            <summary>
+            Класс вектора на плоскости.
+            </summary>
+        </member>
+        <member name="F:MntCuda.Visualisation.OpenSCAD.Vector2D.x">
+            <summary><i>x</i>-координата вектора.</summary>
+        </member>
+        <member name="F:MntCuda.Visualisation.OpenSCAD.Vector2D.y">
+            <summary><i>y</i>-координата вектора.</summary>
+        </member>
+        <member name="M:MntCuda.Visualisation.OpenSCAD.Vector2D.Norm">
+            <summary>Вычислить норму вектора.</summary>
+            <returns>Норма вектора.</returns>
+        </member>
+        <member name="M:MntCuda.Visualisation.OpenSCAD.Vector2D.op_Addition(MntCuda.Visualisation.OpenSCAD.Vector2D,MntCuda.Visualisation.OpenSCAD.Vector2D)">
+            <summary>Сложить два вектора по-координатно.</summary>
+            <param name="a">Первый вектор-слагаемое.</param>
+            <param name="b">Второй вектор-слагаемое.</param>
+            <returns>Сумма векторов.</returns>
+        </member>
+        <member name="M:MntCuda.Visualisation.OpenSCAD.Vector2D.op_Subtraction(MntCuda.Visualisation.OpenSCAD.Vector2D,MntCuda.Visualisation.OpenSCAD.Vector2D)">
+            <summary>Вычесть два вектора по-координатно.</summary>
+            <param name="a">Вектор-уменьшаемое.</param>
+            <param name="b">Вектор-вычитаемое.</param>
+            <returns>Разность векторов.</returns>
+        </member>
+        <member name="M:MntCuda.Visualisation.OpenSCAD.Vector2D.op_Multiply(System.Double,MntCuda.Visualisation.OpenSCAD.Vector2D)">
+            <summary>Умножить вектор по-координатно на действительное число.</summary>
+            <param name="a">Числовой коэффициент.</param>
+            <param name="b">Вектор-множитель.</param>
+            <returns>Результат умножения вектора на число.</returns>
+        </member>
+        <member name="T:MntCuda.Visualisation.OpenSCAD.Vector3D">
+            <summary>
+            Класс вектора в трёхмерном пространстве.
+            </summary>
+        </member>
+        <member name="F:MntCuda.Visualisation.OpenSCAD.Vector3D.x">
+            <summary><i>x</i>-координата вектора.</summary>
+        </member>
+        <member name="F:MntCuda.Visualisation.OpenSCAD.Vector3D.y">
+            <summary><i>y</i>-координата вектора.</summary>
+        </member>
+        <member name="F:MntCuda.Visualisation.OpenSCAD.Vector3D.z">
+            <summary><i>z</i>-координата вектора.</summary>
+        </member>
+        <member name="M:MntCuda.Visualisation.OpenSCAD.Vector3D.#ctor(System.Double,System.Double,System.Double)">
+            <summary>
+            Создать новый экземпляр класса <c>Vector3D</c>.
+            </summary>
+            <param name="x"><i>x</i>-координата вектора.</param>
+            <param name="y"><i>y</i>-координата вектора.</param>
+            <param name="z"><i>z</i>-координата вектора.</param>
+        </member>
+        <member name="M:MntCuda.Visualisation.OpenSCAD.Vector3D.ToString">
+            <summary>
+            Вывести значения координат вектора в текстовом виде.
+            </summary>
+            <returns>Строка в формате <c>"[x, y, z]"</c></returns>
+        </member>
+        <member name="T:MntCuda.Visualisation.OpenSCAD.OpenSCADNode">
+            <summary>
+            <para>
+            Базовый класс узла в дереве операций конструктивной блочной геометрии OpenSCAD.
+            </para><para>
+            OpenSCAD является открытой и кросс-платформенной САПР для параметрического 
+            (не визуального) создания твердотельных трёхмерных объектов. OpenSCAD читает 
+            текстовый файл скрипта с расширением .scad, в котором приведено описание 
+            объекта, компилирует его и строит трёхмерную модель в соответствии с заданным 
+            описанием. В скрипте OpenSCAD используется конструктивная блочная геометрия, 
+            КБГ (англ. Constructive Solid Geometry, CSG). Описание объекта с помощью КБГ 
+            представляет собой дерево операций, узлы (наследники абстрактного класса 
+            <see cref="T:MntCuda.Visualisation.OpenSCAD.OpenSCADNode"/>) которого являются операциями создания объектов 
+            (<see cref="T:MntCuda.Visualisation.OpenSCAD.CubeNode">куб</see>, <see cref="T:MntCuda.Visualisation.OpenSCAD.CylinderNode">цилиндр</see>, 
+            <see cref="T:MntCuda.Visualisation.OpenSCAD.ZPolyNode">призма</see>, основания которой перпендикулярны оси 
+            <i>z</i>и др.), булевыми операциями (наследники класса 
+            <see cref="T:MntCuda.Visualisation.OpenSCAD.OperationNode"/>: <see cref="T:MntCuda.Visualisation.OpenSCAD.IntersectionNode">пересечение</see>, 
+            и <see cref="T:MntCuda.Visualisation.OpenSCAD.DifferenceNode">разность</see>) и другими операциями 
+            (перемещение, поворот, <see cref="T:MntCuda.Visualisation.OpenSCAD.ColorRenderNode">задание цвета</see>, 
+            присвоение значения переменной и т.д.), <see cref="T:MntCuda.Visualisation.OpenSCAD.ModuleNode">определениями 
+            модулей</see> и операциями вызова модулей. 
+            Для визуализации геометрических объектов ПК MNT-CUDA добавлены классы 
+            <see cref="T:MntCuda.Visualisation.OpenSCAD.TopVisualizationNode"/>, <see cref="T:MntCuda.Visualisation.OpenSCAD.ZoneModuleNode"/>, 
+            <see cref="T:MntCuda.Visualisation.OpenSCAD.CellModuleNode"/> и <see cref="T:MntCuda.Visualisation.OpenSCAD.GeometrySystemModuleNode"/>, 
+            добавляющие в дерево операций определения модулей, которые создают секущую фигуру, 
+            <see cref="T:MntCuda.HardGeometry.Zone">геометрическую зону</see>, 
+            <see cref="T:MntCuda.HardGeometry.Cell">геометрическую ячейку</see> и 
+            <see cref="T:MntCuda.HardGeometry.GeometrySystem">геометрическую систему</see> соответственно. 
+            При создании этих модулей им передаются настройки визуализации и способ 
+            раскрашивания физических зон. При этом добавить в дерево операции вызова 
+            этих модулей должен вызывающий код. Следует подчеркнуть, что без 
+            <see cref="T:MntCuda.Visualisation.OpenSCAD.TopVisualizationNode"/> модули создания геометрических зон, ячеек 
+            и систем работать не будут. 
+            </para>
+            </summary>
+        </member>
+        <member name="M:MntCuda.Visualisation.OpenSCAD.OpenSCADNode.Indent(System.Int32)">
+            <summary>
+            Сгенерировать строку-отступ заданного уровня.
+            </summary>
+            <param name="level">Уровень отступа.</param>
+            <returns>Строка из пробелов, обеспечивающая отступ.</returns>
+        </member>
+        <member name="M:MntCuda.Visualisation.OpenSCAD.OpenSCADNode.Translate(MntCuda.Visualisation.OpenSCAD.Vector3D)">
+            <summary>
+            Сгенерировать выражение для узла <c>translate</c> на основе <see cref="T:MntCuda.Visualisation.OpenSCAD.Vector3D"/>.
+            </summary>
+            <param name="v">Аргумент <c>translate</c>.</param>
+            <returns>Строка с вызовом <c>translate</c> на заданный вектор.</returns>
+        </member>
+        <member name="F:MntCuda.Visualisation.OpenSCAD.OpenSCADNode.expr">
+            <summary>
+            Выражение узла (имя с параметрами или несколько имён).
+            </summary>
+        </member>
+        <member name="F:MntCuda.Visualisation.OpenSCAD.OpenSCADNode.children">
+            <summary>
+            Узлы-потомки данного узла в дереве операций конструктивной 
+            блочной геометрии OpenSCAD.
+            </summary>
+        </member>
+        <member name="M:MntCuda.Visualisation.OpenSCAD.OpenSCADNode.#ctor(System.String,MntCuda.Visualisation.OpenSCAD.OpenSCADNode[])">
+            <summary>
+            Создать новый экземпляр узла дерева конструктивной 
+            блочной геометрии OpenSCAD.
+            </summary>
+            <param name="expr">Выражение операции.</param>
+            <param name="args">Узлы-потомки.</param>
+        </member>
+        <member name="M:MntCuda.Visualisation.OpenSCAD.OpenSCADNode.Add(MntCuda.Visualisation.OpenSCAD.OpenSCADNode[])">
+            <summary>
+            Добавить узлы-потомки.
+            </summary>
+            <param name="args">Добавляемые узлы-потомки</param>
+        </member>
+        <member name="M:MntCuda.Visualisation.OpenSCAD.OpenSCADNode.Compile(System.IO.TextWriter,System.Int32)">
+            <summary>
+            Получить текстовое описание данного узла дерева конструктивной 
+            блочной геометрии и его узлов-потомков в формате OpenSCAD.
+            </summary>
+            <param name="writer">Текстовый поток, куда будет записано текстовое описание.</param>
+            <param name="indent_level">Уровень отступа (для читаемости).</param>
+        </member>
+        <member name="T:MntCuda.Visualisation.OpenSCAD.OperationNode">
+            <summary>
+            Базовый класс узлов булевых операций в дереве операций 
+            конструктивной блочной геометрии OpenSCAD.
+            </summary>
+        </member>
+        <member name="M:MntCuda.Visualisation.OpenSCAD.OperationNode.#ctor(System.String,MntCuda.Visualisation.OpenSCAD.OpenSCADNode[])">
+            <summary>
+            Создать новый экземпляр узла булевой операции дерева 
+            конструктивной блочной геометрии OpenSCAD.
+            </summary>
+            <inheritdoc cref="M:MntCuda.Visualisation.OpenSCAD.OpenSCADNode.#ctor(System.String,MntCuda.Visualisation.OpenSCAD.OpenSCADNode[])"/>
+        </member>
+        <member name="M:MntCuda.Visualisation.OpenSCAD.OperationNode.Compile(System.IO.TextWriter,System.Int32)">
+            <inheritdoc cref="M:MntCuda.Visualisation.OpenSCAD.OpenSCADNode.Compile(System.IO.TextWriter,System.Int32)"/>
+        </member>
+        <member name="T:MntCuda.Visualisation.OpenSCAD.BlockNode">
+            <summary>
+            Класс блока узлов в фигурных скобках в дереве операций 
+            конструктивной блочной геометрии OpenSCAD.
+            </summary>
+        </member>
+        <member name="M:MntCuda.Visualisation.OpenSCAD.BlockNode.#ctor(MntCuda.Visualisation.OpenSCAD.OpenSCADNode[])">
+            <summary>
+            Создать новый экземпляр блока узлов в фигурных скобках в дереве 
+            конструктивной блочной геометрии OpenSCAD.
+            </summary>
+            <inheritdoc cref="M:MntCuda.Visualisation.OpenSCAD.OpenSCADNode.#ctor(System.String,MntCuda.Visualisation.OpenSCAD.OpenSCADNode[])"/>
+        </member>
+        <member name="M:MntCuda.Visualisation.OpenSCAD.BlockNode.Compile(System.IO.TextWriter,System.Int32)">
+            <inheritdoc cref="M:MntCuda.Visualisation.OpenSCAD.OpenSCADNode.Compile(System.IO.TextWriter,System.Int32)"/>
+        </member>
+        <member name="T:MntCuda.Visualisation.OpenSCAD.ModuleNode">
+            <summary>
+            Класс узла определения модуля в дереве операций 
+            конструктивной блочной геометрии OpenSCAD.
+            </summary>
+        </member>
+        <member name="M:MntCuda.Visualisation.OpenSCAD.ModuleNode.#ctor(System.String,MntCuda.Visualisation.OpenSCAD.OpenSCADNode[])">
+            <summary>
+            Создать новый экземпляр узла определения модуля в дереве 
+            операций конструктивной блочной геометрии OpenSCAD.
+            </summary>
+            <param name="name">Имя модуля.</param>
+            <inheritdoc cref="M:MntCuda.Visualisation.OpenSCAD.OpenSCADNode.#ctor(System.String,MntCuda.Visualisation.OpenSCAD.OpenSCADNode[])"/>
+        </member>
+        <member name="T:MntCuda.Visualisation.OpenSCAD.DifferenceNode">
+            <summary>
+            Класс узла булевой операции "разность" в дереве операций 
+            конструктивной блочной геометрии OpenSCAD.
+            </summary>
+        </member>
+        <member name="M:MntCuda.Visualisation.OpenSCAD.DifferenceNode.#ctor(MntCuda.Visualisation.OpenSCAD.OpenSCADNode[])">
+            <summary>
+            Создать новый экземпляр узла булевой операции "разность" 
+            в дереве конструктивной блочной геометрии OpenSCAD.
+            </summary>
+            <inheritdoc cref="M:MntCuda.Visualisation.OpenSCAD.OpenSCADNode.#ctor(System.String,MntCuda.Visualisation.OpenSCAD.OpenSCADNode[])"/>
+        </member>
+        <member name="T:MntCuda.Visualisation.OpenSCAD.IntersectionNode">
+            <summary>
+            Класс узла булевой операции "пересечение" в дереве операций 
+            конструктивной блочной геометрии OpenSCAD.
+            </summary>
+        </member>
+        <member name="M:MntCuda.Visualisation.OpenSCAD.IntersectionNode.#ctor(MntCuda.Visualisation.OpenSCAD.OpenSCADNode[])">
+            <summary>
+            Создать новый экземпляр узла булевой операции "пересечение" 
+            в дереве конструктивной блочной геометрии OpenSCAD.
+            </summary>
+            <inheritdoc cref="M:MntCuda.Visualisation.OpenSCAD.OpenSCADNode.#ctor(System.String,MntCuda.Visualisation.OpenSCAD.OpenSCADNode[])"/>
+        </member>
+        <member name="T:MntCuda.Visualisation.OpenSCAD.RotateNode">
+            <summary>
+            Класс узла операции поворота.
+            </summary>
+        </member>
+        <member name="M:MntCuda.Visualisation.OpenSCAD.RotateNode.#ctor(System.Double,MntCuda.Visualisation.OpenSCAD.Vector3D,MntCuda.Visualisation.OpenSCAD.OpenSCADNode[])">
+            <summary>
+            Повернуть узлы-потомки на угол <paramref name="deg_a"/> (градусов) 
+            вокруг оси, направленной вдоль вектора <paramref name="v"/>.
+            </summary>
+            <param name="deg_a">Угол поворота.</param>
+            <param name="v">Направляющий вектор оси поворота.</param>
+            <inheritdoc cref="M:MntCuda.Visualisation.OpenSCAD.OpenSCADNode.#ctor(System.String,MntCuda.Visualisation.OpenSCAD.OpenSCADNode[])"/>
+        </member>
+        <member name="M:MntCuda.Visualisation.OpenSCAD.RotateNode.#ctor(MntCuda.Visualisation.OpenSCAD.Vector3D,MntCuda.Visualisation.OpenSCAD.OpenSCADNode[])">
+            <summary>
+            Повернуть узлы-потомки:
+              1) сначала вокруг оси <i>z</i> на угол <c><paramref name="deg"/>.z</c> (градусов); 
+              2) затем вокруг оси <i>y</i> на угол <c><paramref name="deg"/>.y</c> (градусов); 
+              2) наконец, вокруг оси <i>x</i> на угол <c><paramref name="deg"/>.x</c> (градусов). 
+            </summary>
+            <param name="deg">Углы поворота вокруг координатных осей.</param>
+            <inheritdoc cref="M:MntCuda.Visualisation.OpenSCAD.OpenSCADNode.#ctor(System.String,MntCuda.Visualisation.OpenSCAD.OpenSCADNode[])"/>
+        </member>
+        <member name="T:MntCuda.Visualisation.OpenSCAD.CubeNode">
+            <summary>
+            Класс узла операции создания куба в дереве операций 
+            конструктивной блочной геометрии OpenSCAD.
+            </summary>
+        </member>
+        <member name="M:MntCuda.Visualisation.OpenSCAD.CubeNode.#ctor(MntCuda.Visualisation.OpenSCAD.Vector3D,MntCuda.Visualisation.OpenSCAD.Vector3D)">
+            <summary>
+            Создать куб.
+            </summary>
+            <param name="translate">Координаты угла куба.</param>
+            <param name="size">Размеры куба.</param>
+        </member>
+        <member name="M:MntCuda.Visualisation.OpenSCAD.CubeNode.#ctor(System.String,System.String)">
+            <inheritdoc cref="M:MntCuda.Visualisation.OpenSCAD.CubeNode.#ctor(MntCuda.Visualisation.OpenSCAD.Vector3D,MntCuda.Visualisation.OpenSCAD.Vector3D)"/>
+        </member>
+        <member name="T:MntCuda.Visualisation.OpenSCAD.CylinderNode">
+            <summary>
+            Класс узла операции создания цилиндра в дереве операций 
+            конструктивной блочной геометрии OpenSCAD.
+            </summary>
+        </member>
+        <member name="M:MntCuda.Visualisation.OpenSCAD.CylinderNode.#ctor(MntCuda.Visualisation.OpenSCAD.Vector3D,System.Double,System.Double,System.Double)">
+            <summary>
+            Создать цилиндр.
+            </summary>
+            <param name="translate">Координаты центра нижего основания цилиндра.</param>
+            <param name="zmin"><i>z</i>-координата нижнего основания цилиндра.</param>
+            <param name="zmax"><i>z</i>-координата верхнего основания цилиндра.</param>
+            <param name="R">Радиус цилиндра.</param>
+        </member>
+        <member name="T:MntCuda.Visualisation.OpenSCAD.ZPolyNode">
+            <summary>
+            Класс узла операции создания многоугольной призмы, основания которой перпендикулярны 
+            оси <i>z</i> в дереве операций конструктивной блочной геометрии OpenSCAD.
+            </summary>
+        </member>
+        <member name="M:MntCuda.Visualisation.OpenSCAD.ZPolyNode.#ctor(System.Collections.Generic.List{MntCuda.Visualisation.OpenSCAD.Vector2D},System.Double,System.Double)">
+            <summary>
+            Создать многоугольную призму, основания которой перпендикулярны оси <i>z</i>.
+            </summary>
+            <param name="points">Список координат точек основания призмы.</param>
+            <param name="zmin"><i>z</i>-координата нижнего основания призмы.</param>
+            <param name="zmax"><i>z</i>-координата верхнего основания призмы.</param>
+        </member>
+        <member name="M:MntCuda.Visualisation.OpenSCAD.ZPolyNode.Compile(System.IO.TextWriter,System.Int32)">
+            <inheritdoc cref="M:MntCuda.Visualisation.OpenSCAD.OpenSCADNode.Compile(System.IO.TextWriter,System.Int32)"/>
+        </member>
+        <member name="T:MntCuda.Visualisation.OpenSCAD.ColorRenderNode">
+            <summary>
+            Класс узла операции рендеринга и раскрашивания объекта в 
+            дереве операций конструктивной блочной геометрии OpenSCAD.
+            </summary>
+        </member>
+        <member name="M:MntCuda.Visualisation.OpenSCAD.ColorRenderNode.#ctor(SixLabors.ImageSharp.Color,MntCuda.Visualisation.OpenSCAD.OpenSCADNode[])">
+            <summary>
+            Отрендерить и раскрасить объект.
+            </summary>
+            <param name="c">Цвет объекта.</param>
+            <inheritdoc cref="M:MntCuda.Visualisation.OpenSCAD.OpenSCADNode.#ctor(System.String,MntCuda.Visualisation.OpenSCAD.OpenSCADNode[])"/>
+        </member>
+        <member name="T:MntCuda.Visualisation.OpenSCAD.Colormap`1">
+            <summary>
+            Абстрактный класс цветовой шкалы.
+            </summary>
+            <typeparam name="IndexType">Тип аргумента функции определения цвета - 
+                обычно целое или действительное число.</typeparam>
+        </member>
+        <member name="P:MntCuda.Visualisation.OpenSCAD.Colormap`1.Item(`0)">
+            <summary>
+            Функция определения цвета.
+            </summary>
+            <param name="index">Значение, которому необходимо сопоставить цвет.</param>
+            <returns>Цвет, соответствующий заданному значению.</returns>
+        </member>
+        <member name="T:MntCuda.Visualisation.OpenSCAD.QualitativeColormap">
+            <summary>
+            Базовый класс цветовых шкал для раскрашивания конечного числа 
+            разнородных объектов различными цветами.
+            </summary>
+        </member>
+        <member name="P:MntCuda.Visualisation.OpenSCAD.QualitativeColormap.NColors">
+            <summary>
+            Количество уникальных цветов в цветовой шкале.
+            </summary>
+        </member>
+        <member name="T:MntCuda.Visualisation.OpenSCAD.SelectedGlasbey26">
+            <summary>
+            Цветовая шкала из [C.A. Glasbey <i>et al</i> "Colour displays for categorical images", 2006], 
+            из которой удалены некоторые близкие цвета.
+            </summary>
+        </member>
+        <member name="M:MntCuda.Visualisation.OpenSCAD.SelectedGlasbey26.#ctor">
+            <summary>
+            Инициализировать цветовую шкалу.
+            </summary>
+        </member>
+        <member name="P:MntCuda.Visualisation.OpenSCAD.SelectedGlasbey26.Item(System.Int32)">
+            <summary>
+            Функция определения цвета.
+            </summary>
+            <param name="index">Значение, которому необходимо сопоставить цвет.</param>
+            <returns>Цвет, соответствующий заданному значению.</returns>
+        </member>
+        <member name="T:MntCuda.Visualisation.OpenSCAD.VisualizationSettings">
+            <summary>
+            Структура, содержащая настройки визуализации.
+            </summary>
+        </member>
+        <member name="F:MntCuda.Visualisation.OpenSCAD.VisualizationSettings.bbox">
+            <summary>
+            Размер ограничивающего куба (bounding box) - 
+            <c>[2*bbox x 2*bbox x 2*bbox]</c> - 
+            ни один объект не может выйти за его пределы.
+            </summary>
+        </member>
+        <member name="F:MntCuda.Visualisation.OpenSCAD.VisualizationSettings.delta">
+            <summary>
+            Отступ от истинных положений поверхностей, чтобы не было их наложения.
+            </summary>
+        </member>
+        <member name="F:MntCuda.Visualisation.OpenSCAD.VisualizationSettings.fn">
+            <summary>
+            Количество граней при аппроксимации цилиндров призмами.
+            </summary>
+        </member>
+        <member name="F:MntCuda.Visualisation.OpenSCAD.VisualizationSettings.global_parameters">
+            <summary>
+            Ассоциативный массив (<i>имя параметра</i>, <i>значение параметра</i>). 
+            Инициализация глобальных параметров при компиляции будет добавлена в 
+            начало файла.
+            </summary>
+        </member>
+        <member name="F:MntCuda.Visualisation.OpenSCAD.VisualizationSettings.cutbox_node">
+            <summary>
+            Узел секущей фигуры, который при компиляции будет обёрнут в модуль с 
+            именем "cutbox" и вычтен из всех геометрических зон.
+            </summary>
+        </member>
+        <member name="M:MntCuda.Visualisation.OpenSCAD.VisualizationSettings.#ctor">
+            <summary>
+            Инициализировать настройки визуализации.
+            </summary>
+        </member>
+        <member name="T:MntCuda.Visualisation.OpenSCAD.TopVisualizationNode">
+            <summary>
+            Корневой узел дерева операций конструктивной блочной геометрии OpenSCAD 
+            при визуализации геометрических зон, ячеек и геометрической системы. 
+            </summary>
+            <remarks>
+            Корневой узел будет cодержать определение секущей фигуры, а также 
+            некоторых настроек визуализации.
+            </remarks>
+        </member>
+        <member name="M:MntCuda.Visualisation.OpenSCAD.TopVisualizationNode.#ctor(MntCuda.Visualisation.OpenSCAD.VisualizationSettings)">
+            <summary>
+            Инициализировать корневой узел дерева операций конструктивной блочной 
+            геометрии OpenSCAD. 
+            </summary>
+            <param name="settings">Настройки визуализации.</param>
+        </member>
+        <member name="T:MntCuda.Visualisation.OpenSCAD.ZoneModuleNode">
+            <summary>
+            Узел определения модуля, строящего геометрическую зону, в дереве 
+            операций конструктивной блочной геометрии OpenSCAD. 
+            </summary>
+        </member>
+        <member name="M:MntCuda.Visualisation.OpenSCAD.ZoneModuleNode.#ctor(MntCuda.HardGeometry.Zone,MntCuda.Visualisation.OpenSCAD.Vector3D,SixLabors.ImageSharp.Color,MntCuda.Visualisation.OpenSCAD.VisualizationSettings,System.String)">
+            <summary>
+            Построить геометрическую зону.
+            </summary>
+            <inheritdoc cref="M:MntCuda.Visualisation.OpenSCAD.OpenSCADExtensions.WriteToOpenSCADModelFile(MntCuda.HardGeometry.Zone,MntCuda.Visualisation.OpenSCAD.Vector3D,SixLabors.ImageSharp.Color,MntCuda.Visualisation.OpenSCAD.VisualizationSettings,System.String,System.String)"/>
+        </member>
+        <member name="T:MntCuda.Visualisation.OpenSCAD.CellModuleNode">
+            <summary>
+            Узел определения модуля, строящего геометрическую ячейку, в дереве 
+            операций конструктивной блочной геометрии OpenSCAD. 
+            </summary>
+        </member>
+        <member name="M:MntCuda.Visualisation.OpenSCAD.CellModuleNode.#ctor(MntCuda.HardGeometry.Cell,MntCuda.Visualisation.OpenSCAD.Vector3D,System.Func{System.Int32,SixLabors.ImageSharp.Color},MntCuda.Visualisation.OpenSCAD.VisualizationSettings,System.String)">
+            <summary>
+            Построить геометрическую ячейку.
+            </summary>
+            <inheritdoc cref="M:MntCuda.Visualisation.OpenSCAD.OpenSCADExtensions.WriteToOpenSCADModelFile(MntCuda.HardGeometry.Cell,MntCuda.Visualisation.OpenSCAD.Vector3D,System.Func{System.Int32,SixLabors.ImageSharp.Color},MntCuda.Visualisation.OpenSCAD.VisualizationSettings,System.String,System.String)"/>
+        </member>
+        <member name="T:MntCuda.Visualisation.OpenSCAD.GeometrySystemModuleNode">
+            <summary>
+            Узел определения модуля, строящего геометрическую систему, в дереве 
+            операций конструктивной блочной геометрии OpenSCAD. 
+            </summary>
+            <example>
+            <code>
+            var grid = new Grid(new[] { 2, 1, 1 }, 100, 100);
+            var geo = new GeometrySystem(grid);
+            
+            var D = new float[] { 25, 25, 50 };
+            
+            geo.Cells[0, 0, 0] = new FuelCell();
+            geo.Cells[1, 0, 0] = new MultiCell(D, new KRO_IN(), new KRO_OUT(), 0.5f);
+            
+            var settings = new VisualizationSettings();
+            var cmap = new SelectedGlasbey26();
+            var top = new TopVisualizationNode(settings);
+            top.Add(new OpenSCADNode("geo()"));
+            top.Add(new GeometrySystemModuleNode(geo,
+                (node) => new Vector3D { x = node.i* D[0], y = node.j * D[1], z = node.k * D[2] },
+                (zone) => cmap[zone.nz],
+                settings, "geo"));
+            
+            using (StreamWriter writer = new ("geo.scad"))
+                top.Compile(writer);
+            </code>
+            </example>
+        </member>
+        <member name="M:MntCuda.Visualisation.OpenSCAD.GeometrySystemModuleNode.#ctor(MntCuda.HardGeometry.GeometrySystem,System.Func{MntCuda.NodeIndex,MntCuda.Visualisation.OpenSCAD.Vector3D},System.Func{MntCuda.ZoneIndex,SixLabors.ImageSharp.Color},MntCuda.Visualisation.OpenSCAD.VisualizationSettings,System.String)">
+            <summary>
+            Построить геометрическую систему.
+            </summary>
+            <inheritdoc cref="M:MntCuda.Visualisation.OpenSCAD.OpenSCADExtensions.WriteToOpenSCADModelFile(MntCuda.HardGeometry.GeometrySystem,System.Func{MntCuda.NodeIndex,MntCuda.Visualisation.OpenSCAD.Vector3D},System.Func{MntCuda.ZoneIndex,SixLabors.ImageSharp.Color},MntCuda.Visualisation.OpenSCAD.VisualizationSettings,System.String,System.String)"/>
+        </member>
+        <member name="T:MntCuda.Visualisation.OpenSCAD.Colorizers">
+            <summary>
+            Статический класс, методы которого упрощают раскраску физических зон.
+            </summary>
+        </member>
+        <member name="M:MntCuda.Visualisation.OpenSCAD.Colorizers.QualitativeColorFromCollection``1(MntCuda.BaseZoneIndexedCollection{``0},MntCuda.Visualisation.OpenSCAD.QualitativeColormap)">
+            <summary>
+            Получить функцию, раскрашивающую физические зоны в различные цвета из цветовой 
+            шкалы <paramref name="cmap"/>, если данным зонам соответствуют разные элементы 
+            в индексируемой по зонам коллекции <paramref name="collection"/>.
+            </summary>
+            <typeparam name="T">Тип элементов коллекции.</typeparam>
+            <param name="collection">Индексируемая по зонам коллекция элементов.</param>
+            <param name="cmap">Цветовая шкала.</param>
+            <returns>Функция, раскрашивающая физические зоны в соответствии с элементами коллекции.</returns>
+        </member>
+        <member name="T:MntCuda.Visualisation.SurfacesExtensions">
+            <summary>
+            Методы расширения классов форм поверхностей, проверяющие 
+            лежит ли точка внутри поверхности.
+            </summary>
+        </member>
+        <member name="M:MntCuda.Visualisation.SurfacesExtensions.IsInside(MntCuda.HardGeometry.PlaneOzSurface,System.Double,System.Double)">
+            <summary>
+            Проверить, находится ли точка с координатами <c>(<paramref name="x"/>, <paramref name="y"/>)</c> 
+            "внутри" плоскости <paramref name="s"/>, параллельной оси <i>z</i>.
+            </summary>
+            <param name="s">Плоскость, параллельная оси <i>z</i>.</param>
+            <param name="x"><i>x</i>-координата точки.</param>
+            <param name="y"><i>y</i>-координата точки.</param>
+            <returns>Результат проверки.</returns>
+        </member>
+        <member name="M:MntCuda.Visualisation.SurfacesExtensions.IsInside(MntCuda.HardGeometry.ZConstPlaneSurface,System.Double)">
+            <summary>
+            Проверить, находится ли точка с координатами <c>(<paramref name="x"/>, <paramref name="y"/>)</c> 
+            "внутри" плоскости <paramref name="s"/>, перпендикулярной оси <i>z</i>.
+            </summary>
+            <param name="s">Плоскость, перпендикулярная оси <i>z</i>.</param>
+            <param name="z"><i>z</i>-координата точки.</param>
+            <returns>Результат проверки.</returns>
+        </member>
+        <member name="M:MntCuda.Visualisation.SurfacesExtensions.IsInside(MntCuda.HardGeometry.CylinderOzSurface,System.Double,System.Double)">
+            <summary>
+            Проверить, находится ли точка с координатами <c>(<paramref name="x"/>, <paramref name="y"/>)</c> 
+            "внутри" цилиндрической поверхности <paramref name="s"/>, ось которой параллельна оси <i>z</i>.
+            </summary>
+            <param name="s">Цилиндрическая поверхность, параллельная оси <i>z</i>.</param>
+            <param name="x"><i>x</i>-координата точки.</param>
+            <param name="y"><i>y</i>-координата точки.</param>
+            <returns>Результат проверки.</returns>
+        </member>
+        <member name="M:MntCuda.Visualisation.CellExtentions.CalcVolumes_old(MntCuda.HardGeometry.Cell,System.Single[],System.Int64)">
+            <summary>
+            Рассчитать объёмы физических зон.
+            </summary>
+            <param name="D">Габариты ячейки - размеры прямоугольной области, полностью охватывающей ячейку.</param>
+            <param name="rays_count">Количество лучей.</param>
+            <returns>Массив объёмов физических зон.</returns>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,64 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:YourAppNamespace"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+        x:Class="YourAppNamespace.MainWindow" 
+        x:DataType="vm:MainWindowViewModel" 
+        Icon="/Assets/avalonia-logo.ico" 
+        Title="My Ray Tracer Viewer">
+
+  <Window.DataContext>
+    <vm:MainWindowViewModel/>
+  </Window.DataContext>
+
+  <DockPanel>
+    <Menu DockPanel.Dock="Top">
+      <MenuItem Header="_File">
+        <MenuItem Header="_Open" Command="{Binding OpenFileCommand}"/>
+        <MenuItem Header="_Save" Command="{Binding SaveFileCommand}"/>
+        <Separator/>
+        <MenuItem Header="E_xit" Command="{Binding ExitAppCommand}"/>
+      </MenuItem>
+
+      <MenuItem Header="_Viewer">
+        <MenuItem Header="Zoom _In" Command="{Binding ZoomInCommand}"/>
+        <MenuItem Header="Zoom _Out" Command="{Binding ZoomOutCommand}"/>
+        <Separator/>
+        <MenuItem Header="_Redraw" Command="{Binding RedrawCommand}"/>
+      </MenuItem>
+
+      <MenuItem Header="_Run" Command="{Binding RunTraceCommand}"/>
+
+      <MenuItem Header="_Data"
+                Command="{Binding ShowDataCommand}" CommandParameter="{Binding $parent[Window]}"/>
+        
+     
+    </Menu>
+
+    <Border DockPanel.Dock="Bottom"
+               BorderBrush="LightGray"
+               BorderThickness="0,1,0,0"
+               Padding="5,2">
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+        <TextBlock Text="X: " FontWeight="Bold"/>
+        <TextBlock Text="{Binding MouseX}" MinWidth="30" TextAlignment="Right"/>
+        <TextBlock Text=" Y: " FontWeight="Bold" Margin="10,0,0,0"/>
+        <TextBlock Text="{Binding MouseY}" MinWidth="30" TextAlignment="Right"/>
+      </StackPanel>
+    </Border>
+
+    <Border x:Name="ImageHostArea"
+            Background="Transparent" BorderBrush="Gray"
+            BorderThickness="1"
+            Margin="5"
+            ClipToBounds="True"
+            PointerMoved="ImageArea_PointerMoved"
+            PointerExited="ImageArea_PointerExited">
+      <Image Source="{Binding DisplayedImage}" Stretch="Uniform" />
+    </Border>
+
+  </DockPanel>
+</Window>
+
